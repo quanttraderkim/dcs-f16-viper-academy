@@ -5,6 +5,7 @@
     };
     const pageTexts = window.__DCS_F16_GUIDE_PAGES__ || [];
     const pageTextsKo = window.__DCS_F16_GUIDE_PAGES_KO__ || [];
+    const hasAnyKoTranslation = pageTextsKo.some((text) => Boolean(String(text || "").trim()));
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
@@ -399,7 +400,7 @@
         glossary: [...GLOSSARY],
         selectedModuleId: null,
         selectedPage: 1,
-        readerLanguage: pageTextsKo.length ? "ko" : "en",
+        readerLanguage: hasAnyKoTranslation ? "ko" : "en",
         modalImageUrl: "",
         modalImageTitle: "",
         modalImagePage: 1,
@@ -417,7 +418,7 @@
         state.modules = buildModules();
         state.selectedModuleId = state.modules[0] ? state.modules[0].id : null;
         state.selectedPage = state.modules[0] ? state.modules[0].pageStart : 1;
-        if (!pageTextsKo.length) {
+        if (!hasAnyKoTranslation) {
             state.readerLanguage = "en";
         }
         bindEvents();

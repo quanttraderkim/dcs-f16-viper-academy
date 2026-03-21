@@ -83,3 +83,5 @@ python3 scripts/translate_dcs_f16_guide_ko.py
 - PDF가 업데이트되면 추출 스크립트를 다시 실행하면 됩니다.
 - `generated/dcs_f16_guide/page_images/`와 `generated/dcs_f16_guide/page_images_hd/`는 PDF에서 로컬로 다시 생성할 수 있으므로 기본적으로 Git 추적 대상에서 제외합니다.
 - 한국어 텍스트는 기계번역이므로 HOTAS, INS, IFF 같은 핵심 영어 용어는 원문과 함께 보는 것을 권장합니다.
+- 한국어 번역 스크립트는 페이지별 체크포인트 JSON을 갱신하면서 진행하고, 브라우저용 `guide_bundle_ko.js`는 전체 번역이 끝난 뒤에만 갱신합니다.
+- 추출된 `pages.json`이 바뀌면 번역 스크립트가 해당 페이지들만 다시 번역해 한국어 번역본을 자동으로 갱신합니다.

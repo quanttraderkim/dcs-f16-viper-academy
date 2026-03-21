@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -17,20 +18,35 @@ def load_pages(path: Path) -> list[dict[str, object]]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_existing(path: Path, count: int) -> list[str]:
+def page_source_hash(text: str) -> str:
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()
+
+
+def load_existing(path: Path, source_hashes: list[str]) -> tuple[list[str], list[str]]:
+    count = len(source_hashes)
     if not path.exists():
-        return [""] * count
+        return [""] * count, [""] * count
+
     raw = json.loads(path.read_text(encoding="utf-8"))
     if raw and isinstance(raw[0], dict):
-        result = [""] * count
+        translations = [""] * count
+        stored_hashes = [""] * count
         for item in raw:
             page = int(item["page"])
-            result[page - 1] = str(item.get("text", ""))
-        return result
-    result = list(raw)
-    while len(result) < count:
-        result.append("")
-    return result[:count]
+            index = page - 1
+            translations[index] = str(item.get("text", ""))
+            stored_hashes[index] = str(item.get("sourceHash", "")) or source_hashes[index]
+        return translations, stored_hashes
+
+    translations = list(raw)
+    while len(translations) < count:
+        translations.append("")
+    translations = translations[:count]
+    stored_hashes = [
+        source_hashes[index] if str(text).strip() else ""
+        for index, text in enumerate(translations)
+    ]
+    return translations, stored_hashes
 
 
 def split_chunks(text: str, max_chars: int) -> list[str]:
@@ -94,21 +110,32 @@ def translate_chunk(text: str, pause_ms: int) -> str:
     return translated
 
 
-def write_outputs(output_json: Path, output_js: Path, translations: list[str]) -> None:
+def write_outputs(
+    output_json: Path,
+    output_js: Path,
+    translations: list[str],
+    source_hashes: list[str],
+    *,
+    emit_js: bool,
+) -> None:
     json_payload = [
-        {"page": index, "text": text}
-        for index, text in enumerate(translations, start=1)
+        {"page": index, "text": text, "sourceHash": source_hash}
+        for index, (text, source_hash) in enumerate(
+            zip(translations, source_hashes),
+            start=1,
+        )
     ]
     output_json.write_text(
         json.dumps(json_payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    output_js.write_text(
-        "window.__DCS_F16_GUIDE_PAGES_KO__ = "
-        + json.dumps(translations, ensure_ascii=False)
-        + ";\n",
-        encoding="utf-8",
-    )
+    if emit_js:
+        output_js.write_text(
+            "window.__DCS_F16_GUIDE_PAGES_KO__ = "
+            + json.dumps(translations, ensure_ascii=False)
+            + ";\n",
+            encoding="utf-8",
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -151,15 +178,19 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     pages = load_pages(args.pages_json)
-    translations = load_existing(args.output_json, len(pages))
+    current_source_hashes = [page_source_hash(str(item.get("text", ""))) for item in pages]
+    translations, stored_source_hashes = load_existing(args.output_json, current_source_hashes)
 
     for index, item in enumerate(pages, start=1):
-        if translations[index - 1]:
+        text = str(item.get("text", ""))
+        source_hash = current_source_hashes[index - 1]
+
+        if translations[index - 1] and stored_source_hashes[index - 1] == source_hash:
             continue
 
-        text = str(item.get("text", ""))
         if not text.strip():
             translations[index - 1] = ""
+            stored_source_hashes[index - 1] = source_hash
             continue
 
         chunks = split_chunks(text, args.max_chars)
@@ -169,12 +200,25 @@ def main() -> int:
         translations[index - 1] = "\n\n".join(
             part.strip() for part in translated_chunks if part.strip()
         )
-        write_outputs(args.output_json, args.output_js, translations)
+        stored_source_hashes[index - 1] = source_hash
+        write_outputs(
+            args.output_json,
+            args.output_js,
+            translations,
+            stored_source_hashes,
+            emit_js=False,
+        )
 
         if index == 1 or index % 20 == 0 or index == len(pages):
             print(f"[translator] Translated page {index}/{len(pages)}", file=sys.stderr)
 
-    write_outputs(args.output_json, args.output_js, translations)
+    write_outputs(
+        args.output_json,
+        args.output_js,
+        translations,
+        stored_source_hashes,
+        emit_js=True,
+    )
     print(f"[translator] Done. Output: {args.output_json}", file=sys.stderr)
     return 0
 
