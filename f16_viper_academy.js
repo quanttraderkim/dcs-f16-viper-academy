@@ -394,6 +394,46 @@
         },
     ];
 
+    const DRILL_CONFIGS = {
+        sequence: {
+            label: "Sequence Sortie",
+            objective: "시동과 이착륙 절차를 끊기지 않고 이어가는 sortie 입니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
+        hotas: {
+            label: "HOTAS Reflex",
+            objective: "손에 남아야 하는 스위치 반응을 짧은 연속 웨이브로 고정하는 sortie 입니다.",
+            totalRounds: 6,
+            lives: 3,
+        },
+        topic: {
+            label: "Topic Intercept",
+            objective: "토픽을 보고 어느 파트로 날아가야 하는지 즉시 연결하는 sortie 입니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
+    };
+
+    const BADGE_LIBRARY = {
+        first_sortie: { label: "First Sortie", desc: "첫 문제를 해결했습니다." },
+        hot_streak: { label: "Hot Streak", desc: "3연속 정답을 달성했습니다." },
+        clean_sortie: { label: "Clean Sortie", desc: "오답 없이 sortie를 완주했습니다." },
+        systems_brain: { label: "Systems Brain", desc: "HOTAS sortie를 승리했습니다." },
+        route_reader: { label: "Route Reader", desc: "Topic Intercept sortie를 승리했습니다." },
+        checklist_flow: { label: "Checklist Flow", desc: "Sequence sortie를 승리했습니다." },
+        triple_track: { label: "Triple Track", desc: "세 가지 drill을 모두 승리했습니다." },
+        academy_loop: { label: "Academy Loop", desc: "총 5회 sortie 승리를 달성했습니다." },
+    };
+
+    const PILOT_RANKS = [
+        { xp: 0, label: "Cadet" },
+        { xp: 120, label: "Wingman" },
+        { xp: 260, label: "Flight Lead" },
+        { xp: 520, label: "Viper Driver" },
+        { xp: 900, label: "Mission Commander" },
+    ];
+
     const refs = {};
     let guideSearchTimer = 0;
     let isGuideSearchComposing = false;
@@ -410,6 +450,7 @@
         modalTriedStandardImage: false,
         progress: loadProgress(),
         quiz: null,
+        quizSession: null,
         searchResults: [],
         glossaryFilter: "",
         sidebarCollapsed: loadLayout().sidebarCollapsed,
@@ -431,7 +472,7 @@
         renderGlossary();
         renderAll();
         applyLayout();
-        startDrill("sequence");
+        startDrill("sequence", { countRun: false });
     }
 
     function captureRefs() {
@@ -828,7 +869,58 @@
         }
 
         const question = state.quiz;
+        const session = state.quizSession;
+        const completedRounds = session ? session.correct + session.wrong : 0;
+        const accuracy = completedRounds ? Math.round((session.correct / completedRounds) * 100) : 0;
+        const nextActionLabel = !session
+            ? "새 sortie 시작"
+            : session.status === "active"
+              ? question.answered
+                  ? "다음 웨이브"
+                  : "이번 sortie 재시작"
+              : "같은 sortie 재도전";
+        const statusLabel = session ? quizSessionStatusLabel(session) : "Ready";
+        const rank = currentPilotRank();
+        const objectiveText = session ? DRILL_CONFIGS[session.mode].objective : "";
+        const badgeList = renderUnlockedBadges();
+        const sessionGrade = session ? quizSessionGrade(session) : "Cadet";
+
         refs.quizShell.innerHTML = `
+            <div class="sortie-board">
+                <div class="sortie-topline">
+                    <div class="quiz-kicker">Mission Board</div>
+                    <div class="sortie-status">${escapeHtml(statusLabel)}</div>
+                </div>
+                <div class="sortie-grid">
+                    <article class="sortie-tile">
+                        <span>Pilot Rank</span>
+                        <strong>${escapeHtml(rank.label)}</strong>
+                        <small>${state.progress.xp} XP</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>Sortie Progress</span>
+                        <strong>${session ? `${completedRounds}/${session.totalRounds}` : "0/0"}</strong>
+                        <small>${session ? `Round ${Math.min(session.round, session.totalRounds)} / ${session.totalRounds}` : ""}</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>Combo / Lives</span>
+                        <strong>${session ? `x${session.streak}` : "x0"} / ${session ? session.livesLeft : 0}</strong>
+                        <small>Best ${session ? session.bestStreak : 0}</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>Mission Grade</span>
+                        <strong>${escapeHtml(sessionGrade)}</strong>
+                        <small>Accuracy ${accuracy}%</small>
+                    </article>
+                </div>
+                <div class="sortie-progress">
+                    <div class="sortie-progress-fill" style="width:${session ? quizSessionProgressPercent(session) : 0}%;"></div>
+                </div>
+                <div class="sortie-brief">${escapeHtml(objectiveText)}</div>
+                <div class="sortie-badges">
+                    ${badgeList || `<span class="sortie-badge muted-badge">배지를 아직 열지 못했습니다. 3연속 정답이나 flawless sortie를 노려보세요.</span>`}
+                </div>
+            </div>
             <div class="quiz-kicker">${escapeHtml(question.kicker)}</div>
             <div class="quiz-question">${escapeHtml(question.prompt)}</div>
             <div class="quiz-context">${escapeHtml(question.context)}</div>
@@ -852,7 +944,7 @@
                     ${question.answered ? escapeHtml(question.feedback) : `참조: ${escapeHtml(question.reference)}`}
                 </div>
                 <div class="reader-controls">
-                    <button class="small-button" data-quiz-refresh="${escapeHtml(question.mode)}">다음 문제</button>
+                    <button class="small-button" data-quiz-refresh="${escapeHtml(question.mode)}">${escapeHtml(nextActionLabel)}</button>
                     ${
                         question.moduleId
                             ? `<button class="small-button" data-open-module="${escapeHtml(question.moduleId)}">관련 파트 열기</button>`
@@ -939,7 +1031,7 @@
 
         const refresh = event.target.closest("[data-quiz-refresh]");
         if (refresh) {
-            startDrill(refresh.dataset.quizRefresh);
+            advanceQuiz(refresh.dataset.quizRefresh);
             return;
         }
 
@@ -1025,15 +1117,44 @@
         refs.imageModalImage.style.display = "block";
     }
 
-    function startDrill(mode) {
-        if (mode === "hotas") {
-            state.quiz = buildHotasQuestion();
-        } else if (mode === "topic") {
-            state.quiz = buildTopicQuestion();
-        } else {
-            state.quiz = buildSequenceQuestion();
+    function startDrill(mode, options = {}) {
+        const { countRun = true } = options;
+        const config = DRILL_CONFIGS[mode] || DRILL_CONFIGS.sequence;
+        state.quizSession = createQuizSession(mode, config);
+        state.quiz = buildQuizForMode(mode);
+        if (countRun) {
+            state.progress.modeRuns[mode] = (state.progress.modeRuns[mode] || 0) + 1;
+            saveProgress();
+            renderStats();
         }
         renderQuiz();
+    }
+
+    function advanceQuiz(mode) {
+        const nextMode = mode || (state.quizSession ? state.quizSession.mode : "sequence");
+        if (!state.quizSession || state.quizSession.mode !== nextMode || state.quizSession.status !== "active") {
+            startDrill(nextMode);
+            return;
+        }
+
+        if (!state.quiz || !state.quiz.answered) {
+            startDrill(nextMode);
+            return;
+        }
+
+        state.quizSession.round += 1;
+        state.quiz = buildQuizForMode(nextMode);
+        renderQuiz();
+    }
+
+    function buildQuizForMode(mode) {
+        if (mode === "hotas") {
+            return buildHotasQuestion();
+        }
+        if (mode === "topic") {
+            return buildTopicQuestion();
+        }
+        return buildSequenceQuestion();
     }
 
     function buildSequenceQuestion() {
@@ -1105,6 +1226,108 @@
         };
     }
 
+    function createQuizSession(mode, config) {
+        return {
+            mode,
+            label: config.label,
+            totalRounds: config.totalRounds,
+            round: 1,
+            maxLives: config.lives,
+            livesLeft: config.lives,
+            correct: 0,
+            wrong: 0,
+            streak: 0,
+            bestStreak: 0,
+            score: 0,
+            status: "active",
+        };
+    }
+
+    function finalizeQuizSession(session) {
+        if (session.status !== "active") {
+            return;
+        }
+        const completedRounds = session.correct + session.wrong;
+        if (session.livesLeft <= 0) {
+            session.status = "failed";
+            return;
+        }
+        if (completedRounds >= session.totalRounds) {
+            session.status = "success";
+        }
+    }
+
+    function quizSessionProgressPercent(session) {
+        const completedRounds = session.correct + session.wrong;
+        return Math.round((completedRounds / session.totalRounds) * 100);
+    }
+
+    function quizSessionAccuracy(session) {
+        const completedRounds = session.correct + session.wrong;
+        return completedRounds ? Math.round((session.correct / completedRounds) * 100) : 0;
+    }
+
+    function quizSessionGrade(session) {
+        if (session.status === "failed") {
+            return "Retry";
+        }
+        if (session.wrong === 0 && session.correct >= session.totalRounds) {
+            return "Ace";
+        }
+        const accuracy = quizSessionAccuracy(session);
+        if (accuracy >= 90) {
+            return "Viper";
+        }
+        if (accuracy >= 75) {
+            return "Lead";
+        }
+        return "Cadet";
+    }
+
+    function quizSessionStatusLabel(session) {
+        if (session.status === "success") {
+            return "Sortie Complete";
+        }
+        if (session.status === "failed") {
+            return "Sortie Failed";
+        }
+        return "Sortie Live";
+    }
+
+    function unlockBadge(badgeId) {
+        if (!BADGE_LIBRARY[badgeId]) {
+            return false;
+        }
+        if (state.progress.badges.includes(badgeId)) {
+            return false;
+        }
+        state.progress.badges.push(badgeId);
+        return true;
+    }
+
+    function renderUnlockedBadges() {
+        return state.progress.badges
+            .slice(-4)
+            .map((badgeId) => {
+                const badge = BADGE_LIBRARY[badgeId];
+                if (!badge) {
+                    return "";
+                }
+                return `<span class="sortie-badge" title="${escapeHtml(badge.desc)}">${escapeHtml(badge.label)}</span>`;
+            })
+            .join("");
+    }
+
+    function currentPilotRank() {
+        let current = PILOT_RANKS[0];
+        for (const rank of PILOT_RANKS) {
+            if ((state.progress.xp || 0) >= rank.xp) {
+                current = rank;
+            }
+        }
+        return current;
+    }
+
     function answerQuiz(selectedIndex) {
         if (!state.quiz || state.quiz.answered) {
             return;
@@ -1114,11 +1337,12 @@
         state.quiz.answered = true;
         state.quiz.selectedIndex = selectedIndex;
         const moduleId = state.quiz.moduleId;
+        const session = state.quizSession;
 
         state.progress.answered += 1;
         if (correct) {
             state.progress.correct += 1;
-            state.progress.xp += 15;
+            state.progress.xp += 15 + ((session ? session.streak : 0) * 3);
         } else {
             state.progress.xp += 4;
         }
@@ -1130,6 +1354,26 @@
                 bucket.correct += 1;
             }
             state.progress.modules[moduleId] = bucket;
+        }
+
+        if (session) {
+            if (correct) {
+                session.correct += 1;
+                session.streak += 1;
+                session.bestStreak = Math.max(session.bestStreak, session.streak);
+                session.score += 100 + (session.streak - 1) * 25;
+            } else {
+                session.wrong += 1;
+                session.streak = 0;
+                session.livesLeft = Math.max(0, session.livesLeft - 1);
+                session.score = Math.max(0, session.score - 35);
+            }
+
+            state.progress.bestStreak = Math.max(state.progress.bestStreak || 0, session.bestStreak);
+            unlockBadge("first_sortie");
+            if (session.bestStreak >= 3) {
+                unlockBadge("hot_streak");
+            }
         }
 
         if (state.quiz.mode === "hotas") {
@@ -1146,6 +1390,41 @@
                 : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다.`;
         }
 
+        if (session) {
+            finalizeQuizSession(session);
+            if (session.status === "success") {
+                const successBonus = 35 + session.livesLeft * 8 + session.bestStreak * 5;
+                state.progress.xp += successBonus;
+                state.progress.missionsWon += 1;
+                state.progress.modeWins[session.mode] = (state.progress.modeWins[session.mode] || 0) + 1;
+
+                if (session.wrong === 0) {
+                    unlockBadge("clean_sortie");
+                }
+                if (session.mode === "hotas") {
+                    unlockBadge("systems_brain");
+                } else if (session.mode === "topic") {
+                    unlockBadge("route_reader");
+                } else if (session.mode === "sequence") {
+                    unlockBadge("checklist_flow");
+                }
+                if (
+                    state.progress.modeWins.sequence > 0 &&
+                    state.progress.modeWins.hotas > 0 &&
+                    state.progress.modeWins.topic > 0
+                ) {
+                    unlockBadge("triple_track");
+                }
+                if (state.progress.missionsWon >= 5) {
+                    unlockBadge("academy_loop");
+                }
+
+                state.quiz.feedback = `${state.quiz.feedback} Sortie complete. Grade ${quizSessionGrade(session)}, bonus ${successBonus} XP.`;
+            } else if (session.status === "failed") {
+                state.quiz.feedback = `${state.quiz.feedback} Sortie 실패. 실수 여유를 모두 소모했습니다.`;
+            }
+        }
+
         saveProgress();
         renderStats();
         renderModules();
@@ -1156,12 +1435,13 @@
     function runGuideSearch() {
         window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
-        state.lastGuideSearchTerm = term;
         if (term.length < 2) {
+            state.lastGuideSearchTerm = "";
             state.searchResults = [];
             renderSearchResults();
             return;
         }
+        state.lastGuideSearchTerm = term;
 
         const results = [];
         const seen = new Set();
@@ -1278,12 +1558,13 @@
         }
         window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
-        state.lastGuideSearchTerm = term;
         if (term.length < 2) {
+            state.lastGuideSearchTerm = "";
             state.searchResults = [];
             renderSearchResults();
             return;
         }
+        state.lastGuideSearchTerm = term;
         guideSearchTimer = window.setTimeout(runGuideSearch, 160);
     }
 
@@ -1387,15 +1668,54 @@
         return module ? module.id : null;
     }
 
+    function defaultProgress() {
+        return {
+            xp: 0,
+            answered: 0,
+            correct: 0,
+            modules: {},
+            missionsWon: 0,
+            bestStreak: 0,
+            badges: [],
+            modeRuns: { sequence: 0, hotas: 0, topic: 0 },
+            modeWins: { sequence: 0, hotas: 0, topic: 0 },
+        };
+    }
+
+    function normalizeModeCounter(value) {
+        return {
+            sequence: Number(value?.sequence) || 0,
+            hotas: Number(value?.hotas) || 0,
+            topic: Number(value?.topic) || 0,
+        };
+    }
+
+    function normalizeProgress(value) {
+        const base = defaultProgress();
+        const source = value && typeof value === "object" ? value : {};
+        return {
+            ...base,
+            xp: Number(source.xp) || 0,
+            answered: Number(source.answered) || 0,
+            correct: Number(source.correct) || 0,
+            modules: source.modules && typeof source.modules === "object" ? source.modules : {},
+            missionsWon: Number(source.missionsWon) || 0,
+            bestStreak: Number(source.bestStreak) || 0,
+            badges: Array.isArray(source.badges) ? source.badges.filter((item) => BADGE_LIBRARY[item]) : [],
+            modeRuns: normalizeModeCounter(source.modeRuns),
+            modeWins: normalizeModeCounter(source.modeWins),
+        };
+    }
+
     function loadProgress() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) {
-                return { xp: 0, answered: 0, correct: 0, modules: {} };
+                return defaultProgress();
             }
-            return JSON.parse(raw);
+            return normalizeProgress(JSON.parse(raw));
         } catch (error) {
-            return { xp: 0, answered: 0, correct: 0, modules: {} };
+            return defaultProgress();
         }
     }
 
