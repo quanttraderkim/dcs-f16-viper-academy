@@ -9,6 +9,7 @@
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
+    const LAYOUT_STORAGE_KEY = "viper-academy-layout-v1";
 
     const PART_BRIEFINGS = {
         "Part 1 - Introduction": {
@@ -394,6 +395,7 @@
     ];
 
     const refs = {};
+    let guideSearchTimer = 0;
 
     const state = {
         modules: [],
@@ -409,6 +411,7 @@
         quiz: null,
         searchResults: [],
         glossaryFilter: "",
+        sidebarCollapsed: loadLayout().sidebarCollapsed,
     };
 
     document.addEventListener("DOMContentLoaded", initialize);
@@ -425,10 +428,13 @@
         renderRouteList();
         renderGlossary();
         renderAll();
+        applyLayout();
         startDrill("sequence");
     }
 
     function captureRefs() {
+        refs.workspace = document.getElementById("workspace");
+        refs.workspaceToggle = document.getElementById("workspaceToggle");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
         refs.statModules = document.getElementById("statModules");
@@ -465,11 +471,14 @@
             renderGlossary();
         });
         refs.guideSearchButton.addEventListener("click", runGuideSearch);
+        refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
         refs.guideSearchInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
+                window.clearTimeout(guideSearchTimer);
                 runGuideSearch();
             }
         });
+        refs.workspaceToggle.addEventListener("click", toggleSidebar);
         refs.imageModal.addEventListener("click", handleImageModalClick);
         refs.imageModalClose.addEventListener("click", closeImageModal);
         refs.imageModalImage.addEventListener("error", handleModalImageError);
@@ -593,6 +602,7 @@
         renderModuleDetail();
         renderQuiz();
         renderSearchResults();
+        applyLayout();
     }
 
     function renderRouteList() {
@@ -1132,6 +1142,7 @@
     }
 
     function runGuideSearch() {
+        window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
         if (term.length < 2) {
             state.searchResults = [];
@@ -1248,6 +1259,32 @@
         renderSearchResults();
     }
 
+    function scheduleGuideSearch() {
+        window.clearTimeout(guideSearchTimer);
+        const term = refs.guideSearchInput.value.trim();
+        if (term.length < 2) {
+            state.searchResults = [];
+            renderSearchResults();
+            return;
+        }
+        guideSearchTimer = window.setTimeout(runGuideSearch, 160);
+    }
+
+    function toggleSidebar() {
+        state.sidebarCollapsed = !state.sidebarCollapsed;
+        saveLayout();
+        applyLayout();
+    }
+
+    function applyLayout() {
+        if (!refs.workspace || !refs.workspaceToggle) {
+            return;
+        }
+        refs.workspace.classList.toggle("focus-mode", state.sidebarCollapsed);
+        refs.workspaceToggle.textContent = state.sidebarCollapsed ? "목차 펼치기" : "집중 보기";
+        refs.workspaceToggle.setAttribute("aria-pressed", state.sidebarCollapsed ? "true" : "false");
+    }
+
     function openModule(moduleId, page) {
         const module = state.modules.find((item) => item.id === moduleId);
         if (!module) {
@@ -1341,8 +1378,27 @@
         }
     }
 
+    function loadLayout() {
+        try {
+            const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
+            if (!raw) {
+                return { sidebarCollapsed: false };
+            }
+            return { sidebarCollapsed: Boolean(JSON.parse(raw).sidebarCollapsed) };
+        } catch (error) {
+            return { sidebarCollapsed: false };
+        }
+    }
+
     function saveProgress() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
+    }
+
+    function saveLayout() {
+        localStorage.setItem(
+            LAYOUT_STORAGE_KEY,
+            JSON.stringify({ sidebarCollapsed: state.sidebarCollapsed })
+        );
     }
 
     function shortEnglishTitle(title) {

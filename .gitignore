@@ -1,4 +1,5 @@
 __pycache__/
 .DS_Store
+.vercel/
 generated/dcs_f16_guide/page_images/
 generated/dcs_f16_guide/page_images_hd/

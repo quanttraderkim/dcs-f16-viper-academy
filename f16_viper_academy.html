@@ -209,14 +209,49 @@
         .workspace {
             margin-top: 22px;
             display: grid;
-            grid-template-columns: 360px minmax(0, 1fr);
+            grid-template-columns: 320px minmax(0, 1fr);
             gap: 18px;
             align-items: start;
+            transition: grid-template-columns 180ms ease, gap 180ms ease;
+        }
+
+        .workspace.focus-mode {
+            grid-template-columns: 0 minmax(0, 1fr);
+            gap: 0;
+        }
+
+        .workspace > aside {
+            min-width: 0;
+            transition: opacity 180ms ease, transform 180ms ease;
+        }
+
+        .workspace.focus-mode > aside {
+            opacity: 0;
+            pointer-events: none;
+            overflow: hidden;
+            transform: translateX(-18px);
         }
 
         .stack {
             display: grid;
             gap: 18px;
+        }
+
+        .workspace-toolbar {
+            margin-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 0 4px;
+        }
+
+        .workspace-toolbar .muted {
+            font-size: 13px;
+        }
+
+        .workspace-toggle {
+            min-width: 132px;
         }
 
         .panel {
@@ -752,6 +787,10 @@
             align-items: start;
         }
 
+        .workspace.focus-mode .reader-layout {
+            grid-template-columns: minmax(680px, 1.62fr) minmax(340px, 0.78fr);
+        }
+
         .reader-visual,
         .reader-body {
             border-radius: var(--radius-lg);
@@ -969,6 +1008,14 @@
                 grid-template-columns: 1fr;
             }
 
+            .workspace.focus-mode {
+                gap: 18px;
+            }
+
+            .workspace.focus-mode > aside {
+                display: none;
+            }
+
             .stat-strip {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -1001,6 +1048,11 @@
             .guide-search,
             .glossary-search {
                 grid-template-columns: 1fr;
+            }
+
+            .workspace-toolbar {
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .image-modal-card {
@@ -1054,7 +1106,12 @@
             </div>
         </header>
 
-        <div class="workspace">
+        <div class="workspace-toolbar">
+            <button class="small-button workspace-toggle" id="workspaceToggle" data-toggle-sidebar="true" type="button">집중 보기</button>
+            <p class="muted">좌측 로드맵과 용어 패널을 접고, PDF 이미지와 텍스트 리더 영역을 더 크게 봅니다.</p>
+        </div>
+
+        <div class="workspace" id="workspace">
             <aside class="stack">
                 <section class="panel">
                     <div class="panel-kicker">Campaign Map</div>
