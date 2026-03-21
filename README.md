@@ -23,9 +23,18 @@
   - `outline.md`: 사람이 읽기 쉬운 목차
   - `full_text.md`: 전체 페이지 텍스트
   - `pages.json`: 전체 페이지 텍스트 JSON
+  - `page_images/`: 로컬에서 생성하는 페이지 이미지
   - `sections/*.md`: 파트별 분할본
 
 ## 실행
+
+필요한 파이썬 패키지를 먼저 설치합니다.
+
+```bash
+python3 -m pip install --user -r requirements.txt
+```
+
+그 다음 로컬 서버를 띄웁니다.
 
 ```bash
 python3 -m http.server 8123
@@ -38,9 +47,12 @@ python3 -m http.server 8123
 ## PDF 재추출
 
 ```bash
+python3 -m pip install --user -r requirements.txt
+
 python3 scripts/extract_dcs_f16_guide.py \
   "/Users/daehwan/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/300. 취미/FlightSim/DCS F-16C Viper Guide.pdf" \
-  --output-dir generated/dcs_f16_guide
+  --output-dir generated/dcs_f16_guide \
+  --render-page-images
 ```
 
 ## 학습 방식
@@ -52,8 +64,10 @@ python3 scripts/extract_dcs_f16_guide.py \
 - HOTAS 드릴: 스틱/스로틀 입력 암기
 - Topic Intercept: 전체 가이드 목차 기반 파트 매핑 퀴즈
 - 전체 가이드 검색과 페이지 리더
+- 페이지 이미지와 텍스트를 나란히 보는 가이드 리더
 
 ## 참고
 
 - 진행률은 브라우저 `localStorage`에 저장됩니다.
 - PDF가 업데이트되면 추출 스크립트를 다시 실행하면 됩니다.
+- `generated/dcs_f16_guide/page_images/`는 PDF에서 로컬로 다시 생성할 수 있으므로 기본적으로 Git 추적 대상에서 제외합니다.
