@@ -396,6 +396,7 @@
 
     const refs = {};
     let guideSearchTimer = 0;
+    let isGuideSearchComposing = false;
 
     const state = {
         modules: [],
@@ -412,6 +413,7 @@
         searchResults: [],
         glossaryFilter: "",
         sidebarCollapsed: loadLayout().sidebarCollapsed,
+        lastGuideSearchTerm: "",
     };
 
     document.addEventListener("DOMContentLoaded", initialize);
@@ -435,6 +437,7 @@
     function captureRefs() {
         refs.workspace = document.getElementById("workspace");
         refs.workspaceToggle = document.getElementById("workspaceToggle");
+        refs.workspaceAside = document.querySelector("#workspace > aside");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
         refs.statModules = document.getElementById("statModules");
@@ -472,8 +475,15 @@
         });
         refs.guideSearchButton.addEventListener("click", runGuideSearch);
         refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
+        refs.guideSearchInput.addEventListener("compositionstart", () => {
+            isGuideSearchComposing = true;
+        });
+        refs.guideSearchInput.addEventListener("compositionend", () => {
+            isGuideSearchComposing = false;
+            scheduleGuideSearch();
+        });
         refs.guideSearchInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !isGuideSearchComposing && !event.isComposing) {
                 window.clearTimeout(guideSearchTimer);
                 runGuideSearch();
             }
@@ -855,7 +865,9 @@
 
     function renderSearchResults() {
         if (!state.searchResults.length) {
-            refs.searchResults.innerHTML = `<div class="empty-state">검색어를 입력하면 목차 토픽과 영문 원문, 한국어 번역 페이지를 함께 찾습니다.</div>`;
+            refs.searchResults.innerHTML = state.lastGuideSearchTerm
+                ? `<div class="empty-state"><strong>${escapeHtml(state.lastGuideSearchTerm)}</strong>에 대한 결과가 없습니다. 약어, 원문 표현, 한국어 표현 중 다른 형태로 다시 검색해보세요.</div>`
+                : `<div class="empty-state">검색어를 입력하면 목차 토픽과 영문 원문, 한국어 번역 페이지를 함께 찾습니다.</div>`;
             return;
         }
 
@@ -1144,6 +1156,7 @@
     function runGuideSearch() {
         window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
+        state.lastGuideSearchTerm = term;
         if (term.length < 2) {
             state.searchResults = [];
             renderSearchResults();
@@ -1260,8 +1273,12 @@
     }
 
     function scheduleGuideSearch() {
+        if (isGuideSearchComposing) {
+            return;
+        }
         window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
+        state.lastGuideSearchTerm = term;
         if (term.length < 2) {
             state.searchResults = [];
             renderSearchResults();
@@ -1281,6 +1298,10 @@
             return;
         }
         refs.workspace.classList.toggle("focus-mode", state.sidebarCollapsed);
+        if (refs.workspaceAside) {
+            refs.workspaceAside.inert = state.sidebarCollapsed;
+            refs.workspaceAside.setAttribute("aria-hidden", state.sidebarCollapsed ? "true" : "false");
+        }
         refs.workspaceToggle.textContent = state.sidebarCollapsed ? "목차 펼치기" : "집중 보기";
         refs.workspaceToggle.setAttribute("aria-pressed", state.sidebarCollapsed ? "true" : "false");
     }
@@ -1480,14 +1501,56 @@
     }
 
     function makeSnippet(text, term) {
-        const lower = text.toLowerCase();
-        const index = lower.indexOf(term.toLowerCase());
+        const index = findSnippetIndex(text, term);
         if (index === -1) {
             return text.slice(0, 180);
         }
         const start = Math.max(0, index - 70);
         const end = Math.min(text.length, index + term.length + 110);
         return text.slice(start, end).replace(/\s+/g, " ").trim();
+    }
+
+    function findSnippetIndex(text, term) {
+        const rawText = String(text || "");
+        const rawNeedle = String(term || "");
+        const rawIndex = rawText.toLowerCase().indexOf(rawNeedle.toLowerCase());
+        if (rawIndex !== -1) {
+            return rawIndex;
+        }
+
+        const compactNeedle = compactSearchText(term);
+        if (!compactNeedle) {
+            return -1;
+        }
+
+        const compactSource = buildCompactSearchSource(rawText);
+        const compactIndex = compactSource.compact.indexOf(compactNeedle);
+        if (compactIndex === -1) {
+            return -1;
+        }
+        return compactSource.indexMap[compactIndex] ?? -1;
+    }
+
+    function buildCompactSearchSource(value) {
+        const source = String(value || "");
+        const compact = [];
+        const indexMap = [];
+
+        for (let index = 0; index < source.length; index += 1) {
+            const normalized = source[index].normalize("NFKC").toLowerCase();
+            for (const character of normalized) {
+                if (!/[a-z0-9가-힣]/.test(character)) {
+                    continue;
+                }
+                compact.push(character);
+                indexMap.push(index);
+            }
+        }
+
+        return {
+            compact: compact.join(""),
+            indexMap,
+        };
     }
 
     function clamp(value, min, max) {
