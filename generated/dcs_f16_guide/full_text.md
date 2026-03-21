@@ -2,7 +2,7 @@
 
 - Source PDF: `/Users/daehwan/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/300. 취미/FlightSim/DCS F-16C Viper Guide.pdf`
 - Total pages: `794`
-- Extracted at: `2026-03-21T23:56:39.942254+09:00`
+- Extracted at: `2026-03-22T00:13:56.366745+09:00`
 - PDF metadata:
   - `/Title`: `DCS F-16C Viper Guide`
   - `/Author`: `Charles Ouellet`

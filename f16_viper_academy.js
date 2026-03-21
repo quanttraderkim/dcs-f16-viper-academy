@@ -464,8 +464,64 @@
         const roots = (manifest.tree || [])
             .filter((node) => /^Part \d+/.test(node.title))
             .map((node) => decorateModule(node));
+        const referenceModule = buildReferenceModule();
+        if (referenceModule) {
+            roots.push(referenceModule);
+        }
 
         return roots.sort((left, right) => left.routeRank - right.routeRank);
+    }
+
+    function buildReferenceModule() {
+        const frontNodes = (manifest.tree || []).filter((node) => {
+            return !/^Part \d+/.test(node.title) && node.pageStart && node.pageStart <= 3;
+        });
+
+        if (!frontNodes.length) {
+            return null;
+        }
+
+        const pageStart = Math.min(...frontNodes.map((node) => node.pageStart || 1));
+        const pageEnd = Math.max(...frontNodes.map((node) => node.pageEnd || node.pageStart || 1));
+        const topics = frontNodes.map((node) => ({
+            title: node.title,
+            path: [node.title],
+            pageStart: node.pageStart,
+            pageEnd: node.pageEnd,
+            rootTitle: "Guide Front Matter",
+        }));
+
+        topics.unshift({
+            title: "가이드 서문",
+            path: ["Guide Front Matter", "가이드 서문"],
+            pageStart,
+            pageEnd,
+            rootTitle: "Guide Front Matter",
+            synthetic: true,
+        });
+
+        return {
+            id: "guide-front-matter",
+            title: "Guide Front Matter",
+            children: [],
+            partNumber: 0,
+            routeRank: 999,
+            meta: {
+                koTitle: "가이드 서문",
+                track: "Reference",
+                mission: "표지, 면책문, 목차 같은 앞머리 페이지도 검색 후 바로 열 수 있게 하는 레퍼런스 모듈입니다.",
+                summary: "실제 학습 파트는 아니지만, 전체 가이드 구조를 빠르게 훑거나 검색 결과를 여는 데 필요합니다.",
+                bullets: [
+                    "표지, 면책문, 목차 페이지를 한데 묶어서 검색 결과 dead click을 없앱니다.",
+                    "학습 루트에는 넣지 않지만, 전체 가이드 검색 범위는 그대로 유지합니다.",
+                    "파트 1에 들어가기 전 가이드 구조를 빠르게 확인할 때 유용합니다.",
+                ],
+                terms: ["Cover", "Disclaimer", "Table of Contents"],
+            },
+            pageStart,
+            pageEnd,
+            topics,
+        };
     }
 
     function decorateModule(node) {
@@ -516,13 +572,13 @@
     }
 
     function renderRouteList() {
-        const top = state.modules.slice(0, 6);
+        const top = state.modules.filter((module) => module.partNumber > 0).slice(0, 6);
         refs.routeList.innerHTML = top
             .map(
                 (module) => `
                     <div class="hero-list-item">
                         <span>${escapeHtml(module.meta.koTitle)} / ${escapeHtml(shortEnglishTitle(module.title))}</span>
-                        <strong>ROUTE ${String(module.routeRank).padStart(2, "0")}</strong>
+                        <strong>${escapeHtml(moduleRankLabel(module))}</strong>
                     </div>
                 `
             )
@@ -533,8 +589,9 @@
         const answered = state.progress.answered || 0;
         const correct = state.progress.correct || 0;
         const accuracy = answered ? Math.round((correct / answered) * 100) : 0;
+        const academyModuleCount = state.modules.filter((module) => module.partNumber > 0).length;
         refs.statPages.textContent = String(manifest.pageCount || pageTexts.length || 0);
-        refs.statModules.textContent = String(state.modules.length);
+        refs.statModules.textContent = String(academyModuleCount);
         refs.statXp.textContent = String(state.progress.xp || 0);
         refs.statAccuracy.textContent = `${accuracy}%`;
     }
@@ -547,7 +604,7 @@
                 return `
                     <article class="module-card ${active}" data-module-id="${escapeHtml(module.id)}">
                         <div class="module-topline">
-                            <span class="module-rank">Route ${String(module.routeRank).padStart(2, "0")}</span>
+                            <span class="module-rank">${escapeHtml(moduleRankLabel(module))}</span>
                             <span class="module-score">${score.percent}%</span>
                         </div>
                         <div class="module-title">${escapeHtml(module.meta.koTitle)}</div>
@@ -600,6 +657,7 @@
         const pageText = pageTexts[state.selectedPage - 1] || "로컬 페이지 텍스트가 없습니다.";
         const moduleScore = getModuleScore(module.id);
         const topSections = module.topics.slice(0, 14);
+        const imageUrl = pageImageUrl(state.selectedPage);
 
         refs.moduleDetail.innerHTML = `
             <div class="detail-headline">
@@ -609,7 +667,7 @@
                     <div class="english-title">${escapeHtml(module.title)} / ${formatPageRange(module.pageStart, module.pageEnd)}</div>
                 </div>
                 <div class="route-banner">
-                    <span class="route-chip">Route ${String(module.routeRank).padStart(2, "0")}</span>
+                    <span class="route-chip">${escapeHtml(moduleRankLabel(module))}</span>
                     <span class="route-chip">진행률 ${moduleScore.percent}%</span>
                     <span class="route-chip">토픽 ${module.topics.length}개</span>
                 </div>
@@ -677,7 +735,21 @@
                 <span class="meta-chip">${escapeHtml(module.meta.koTitle)}</span>
                 <span class="meta-chip">${formatPageRange(state.selectedPage, state.selectedPage)}</span>
             </div>
-            <article class="reader-body">${escapeHtml(pageText)}</article>
+            <div class="reader-layout">
+                <div class="reader-visual">
+                    <img
+                        class="reader-image"
+                        src="${escapeHtml(imageUrl)}"
+                        alt="Guide page ${state.selectedPage}"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                    >
+                    <div class="reader-fallback">
+                        이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
+                        <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
+                    </div>
+                </div>
+                <article class="reader-body">${escapeHtml(pageText)}</article>
+            </div>
         `;
     }
 
@@ -1062,6 +1134,13 @@
         return index === -1 ? 99 : index + 1;
     }
 
+    function moduleRankLabel(module) {
+        if (module.partNumber === 0) {
+            return "Reference";
+        }
+        return `Route ${String(module.routeRank).padStart(2, "0")}`;
+    }
+
     function defaultBriefing(title) {
         return {
             koTitle: title,
@@ -1118,6 +1197,10 @@
         }
         const trimmed = path.filter((item) => item !== rootTitle);
         return trimmed.length ? trimmed.join(" > ") : rootTitle;
+    }
+
+    function pageImageUrl(page) {
+        return `generated/dcs_f16_guide/page_images/page-${String(page).padStart(4, "0")}.jpg`;
     }
 
     function makeSnippet(text, term) {

@@ -672,20 +672,52 @@
             flex-wrap: wrap;
         }
 
-        .reader-body {
+        .reader-layout {
             margin-top: 16px;
+            display: grid;
+            grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        .reader-visual,
+        .reader-body {
             padding: 18px;
             border-radius: var(--radius-lg);
             background: rgba(16, 22, 22, 0.66);
             border: 1px solid rgba(255, 237, 192, 0.12);
             max-height: 540px;
             overflow: auto;
+        }
+
+        .reader-visual {
+            display: grid;
+            place-items: center;
+        }
+
+        .reader-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        }
+
+        .reader-fallback {
+            display: none;
+            color: var(--text-body);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .reader-body {
             white-space: pre-wrap;
             line-height: 1.62;
             font-size: 14px;
             color: rgba(244, 238, 223, 0.88);
         }
 
+        .panel.light .reader-visual,
         .panel.light .reader-body {
             background: rgba(24, 30, 28, 0.05);
             color: rgba(19, 24, 22, 0.88);
@@ -722,7 +754,8 @@
             .workspace,
             .detail-grid,
             .hero-grid,
-            .drill-grid {
+            .drill-grid,
+            .reader-layout {
                 grid-template-columns: 1fr;
             }
 

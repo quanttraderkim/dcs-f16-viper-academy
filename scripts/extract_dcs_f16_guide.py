@@ -240,6 +240,36 @@ def write_pages_json(path: Path, page_texts: list[str]) -> None:
     write_json(path, payload)
 
 
+def render_page_images(
+    pdf_path: Path,
+    image_dir: Path,
+    page_count: int,
+    image_scale: float,
+    image_quality: int,
+) -> None:
+    try:
+        import fitz
+    except ImportError as exc:
+        raise RuntimeError(
+            "PyMuPDF is required for --render-page-images. Install it with: python3 -m pip install --user pymupdf"
+        ) from exc
+
+    ensure_dir(image_dir)
+    document = fitz.open(str(pdf_path))
+    matrix = fitz.Matrix(image_scale, image_scale)
+
+    for page_index in range(page_count):
+        page = document.load_page(page_index)
+        pixmap = page.get_pixmap(matrix=matrix, alpha=False)
+        image_path = image_dir / f"page-{page_index + 1:04d}.jpg"
+        pixmap.save(image_path, jpg_quality=image_quality)
+        if page_index == 0 or (page_index + 1) % 25 == 0 or page_index + 1 == page_count:
+            print(
+                f"[extractor] Rendered page image {page_index + 1}/{page_count}",
+                file=sys.stderr,
+            )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Extract the DCS F-16C Viper Guide PDF into readable markdown and JSON."
@@ -250,6 +280,23 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("generated/dcs_f16_guide"),
         help="Directory where extracted files will be written",
+    )
+    parser.add_argument(
+        "--render-page-images",
+        action="store_true",
+        help="Render low-resolution page images alongside extracted text",
+    )
+    parser.add_argument(
+        "--image-scale",
+        type=float,
+        default=0.75,
+        help="Scale factor for rendered page images",
+    )
+    parser.add_argument(
+        "--image-quality",
+        type=int,
+        default=60,
+        help="JPEG quality for rendered page images",
     )
     return parser.parse_args()
 
@@ -265,6 +312,7 @@ def main() -> int:
 
     ensure_dir(output_dir)
     ensure_dir(output_dir / "sections")
+    image_dir = output_dir / "page_images"
 
     print(f"[extractor] Opening PDF: {pdf_path}", file=sys.stderr)
     reader = PdfReader(str(pdf_path))
@@ -287,6 +335,8 @@ def main() -> int:
         "sourcePdf": str(pdf_path),
         "pageCount": page_count,
         "extractedAt": datetime.now(timezone.utc).astimezone().isoformat(),
+        "pageImageDir": "page_images" if args.render_page_images else None,
+        "pageImageFormat": "jpg" if args.render_page_images else None,
         "metadata": metadata,
         "outline": [
             {
@@ -301,6 +351,16 @@ def main() -> int:
         ],
         "tree": outline_tree,
     }
+
+    if args.render_page_images:
+        print("[extractor] Rendering page images", file=sys.stderr)
+        render_page_images(
+            pdf_path=pdf_path,
+            image_dir=image_dir,
+            page_count=page_count,
+            image_scale=args.image_scale,
+            image_quality=args.image_quality,
+        )
 
     print("[extractor] Writing files", file=sys.stderr)
     write_json(output_dir / "guide_manifest.json", manifest)
