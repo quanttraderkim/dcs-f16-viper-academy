@@ -28,6 +28,14 @@
 
 ## 실행
 
+필요한 파이썬 패키지를 먼저 설치합니다.
+
+```bash
+python3 -m pip install --user -r requirements.txt
+```
+
+그 다음 로컬 서버를 띄웁니다.
+
 ```bash
 python3 -m http.server 8123
 ```
@@ -39,6 +47,8 @@ python3 -m http.server 8123
 ## PDF 재추출
 
 ```bash
+python3 -m pip install --user -r requirements.txt
+
 python3 scripts/extract_dcs_f16_guide.py \
   "/Users/daehwan/Library/Mobile Documents/iCloud~md~obsidian/Documents/Vault/300. 취미/FlightSim/DCS F-16C Viper Guide.pdf" \
   --output-dir generated/dcs_f16_guide \
