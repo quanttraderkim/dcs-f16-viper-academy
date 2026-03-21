@@ -263,7 +263,9 @@
         {
             title: "Cold Start Flow",
             moduleTitle: "Part 4 - Start-Up Procedure",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "램프에서 막히지 않으려면, 시동은 개별 스위치보다 큰 단계 흐름을 먼저 기억해야 합니다.",
+            debrief: "시동은 전원, 엔진, 항전장비, INS, 데이터링크, IFF 순서의 큰 줄기를 유지하는 것이 핵심입니다.",
             steps: [
                 { ko: "기체 전원 공급", en: "Provide Aircraft Power" },
                 { ko: "시동 전 사전 설정", en: "Perform Aircraft Pre-Start Setup" },
@@ -279,7 +281,9 @@
         {
             title: "Takeoff Run",
             moduleTitle: "Part 5 - Taxi & Takeoff",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "활주로에서 꼬이는 가장 큰 이유는 NWS, Probe Heat, 브레이크, 스풀업 순서가 흐트러지기 때문입니다.",
+            debrief: "이륙 전 체크는 활주로 진입 뒤에 급하게 하는 것이 아니라, 가속 전에 기체 상태를 안정시키는 과정입니다.",
             steps: [
                 { ko: "활주로 정렬", en: "Line up on the runway" },
                 { ko: "Taxi Light 끄기", en: "Turn OFF taxi light" },
@@ -298,7 +302,9 @@
         {
             title: "Landing Pattern",
             moduleTitle: "Part 6 - Landing",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "착륙은 숫자 암기보다 패턴 흐름과 AOA 감각이 먼저 몸에 들어와야 안정됩니다.",
+            debrief: "오버헤드 브레이크부터 숏 파이널까지 흐름을 머릿속에 고정하면 접근 중에도 시선이 덜 흔들립니다.",
             steps: [
                 { ko: "초기 진입", en: "Initial Approach" },
                 { ko: "오버헤드 브레이크", en: "Overhead Break" },
@@ -319,6 +325,7 @@
             answer: "TMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "TMS는 Target Management Switch 입니다. 표적 관리와 센서 흐름에서 핵심 입력입니다.",
+            practicalUse: "레이더 락이나 센서 우선순위를 바꿀 때 손에서 바로 나와야 하는 입력입니다.",
         },
         {
             prompt: "디스플레이 포커스를 다루는 Display Management Switch 는 무엇입니까?",
@@ -327,6 +334,7 @@
             answer: "DMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "DMS는 Display Management Switch 입니다. MFD와 화면 우선순위를 다룰 때 자주 쓰입니다.",
+            practicalUse: "SOI가 어디에 있는지 헷갈리면 센서 운용 전체가 꼬이기 시작합니다.",
         },
         {
             prompt: "Countermeasures Switch 의 약어는 무엇입니까?",
@@ -335,6 +343,7 @@
             answer: "CMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "CMS는 Countermeasures Switch 입니다. 방어체계 운용의 핵심 스위치입니다.",
+            practicalUse: "RWR 경고가 들어왔을 때 생각보다 먼저 손이 가야 하는 스위치입니다.",
         },
         {
             prompt: "지상 활주 중 노즈휠 스티어링을 켜는 버튼은 무엇입니까?",
@@ -343,6 +352,7 @@
             answer: "NWS A/R DISC & MSL STEP Button",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "NWS A/R DISC & MSL STEP Button 은 지상에서는 Nosewheel Steering, 공중에서는 다른 맥락의 기능을 가집니다.",
+            practicalUse: "활주 중 방향을 못 잡거나 70노트 해제 타이밍을 놓치면 이륙이 불안정해집니다.",
         },
         {
             prompt: "오토파일럿을 즉시 끊는 역할을 하는 입력은 무엇입니까?",
@@ -351,6 +361,7 @@
             answer: "Paddle Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Paddle Switch 는 depressed 시 Autopilot override 역할을 합니다.",
+            practicalUse: "접근이나 저고도 비행 중 기체가 내 손으로 바로 돌아와야 할 때 중요합니다.",
         },
         {
             prompt: "Dogfight / Missile Override / Center 3단 위치를 가지는 조작은 무엇입니까?",
@@ -359,6 +370,7 @@
             answer: "Dogfight Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Dogfight Switch 는 근접 공중전 상태 전환을 매우 빠르게 수행하는 3위치 스위치입니다.",
+            practicalUse: "A-A 상황에서 모드를 메뉴로 찾는 순간 이미 늦는 경우가 많습니다.",
         },
         {
             prompt: "센서 화면의 시야각을 바꾸는 Expand / FOV 조작은 무엇입니까?",
@@ -367,6 +379,7 @@
             answer: "Expand/FOV Button",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Expand/FOV Button 은 현재 선택된 센서의 시야각을 전환할 때 사용됩니다.",
+            practicalUse: "TGP나 레이더 화면을 더 자세히 보거나 넓게 훑을 때 즉시 쓰게 됩니다.",
         },
         {
             prompt: "레이더 또는 TGP 커서를 실제로 슬루하는 입력은 무엇입니까?",
@@ -375,6 +388,7 @@
             answer: "Radar Cursor/Enable Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Radar Cursor/Enable Switch 는 FCR, TGP, 무장 비디오에서 커서를 움직이는 핵심 입력입니다.",
+            practicalUse: "표적을 찾고 옮기고 지정하는 모든 흐름이 이 입력 위에 올라갑니다.",
         },
         {
             prompt: "레이더 안테나 고도를 바꾸는 조작은 무엇입니까?",
@@ -383,6 +397,7 @@
             answer: "Radar Antenna Elevation Knob",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Radar Antenna Elevation Knob 는 레이더 탐색 볼륨을 수직 방향으로 조정할 때 사용합니다.",
+            practicalUse: "표적이 안 보일 때 레이더 모드보다 먼저 확인해야 할 경우가 많습니다.",
         },
         {
             prompt: "Speed Brake 를 열고 닫는 3위치 조작은 무엇입니까?",
@@ -391,39 +406,43 @@
             answer: "Speed Brake Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Speed Brake Switch 는 AFT로 전개, FWD로 수납, Center로 현 상태 유지입니다.",
+            practicalUse: "패턴 진입과 에너지 정리에 직접 연결되는 만큼 손 감각이 중요합니다.",
         },
     ];
 
     const DRILL_CONFIGS = {
         sequence: {
-            label: "Sequence Sortie",
-            objective: "시동과 이착륙 절차를 끊기지 않고 이어가는 sortie 입니다.",
+            label: "체크리스트 플로우",
+            objective: "시동, 활주, 이륙, 착륙 절차를 실제 체크리스트 흐름처럼 반복 훈련합니다.",
+            practiceValue: "DCS 초반 막힘의 대부분은 절차 흐름이 끊기는 데서 옵니다. 이 훈련은 그 구간을 줄이는 데 가장 직접적입니다.",
             totalRounds: 5,
             lives: 3,
         },
         hotas: {
-            label: "HOTAS Reflex",
-            objective: "손에 남아야 하는 스위치 반응을 짧은 연속 웨이브로 고정하는 sortie 입니다.",
+            label: "HOTAS 반응 훈련",
+            objective: "센서와 무장을 다루는 핵심 스위치를 실제 상황 문맥과 함께 손에 익힙니다.",
+            practiceValue: "실전에서는 메뉴를 읽는 속도보다 손이 먼저 가는 속도가 더 중요합니다.",
             totalRounds: 6,
             lives: 3,
         },
         topic: {
-            label: "Topic Intercept",
-            objective: "토픽을 보고 어느 파트로 날아가야 하는지 즉시 연결하는 sortie 입니다.",
+            label: "가이드 구조 훈련",
+            objective: "토픽을 보고 어느 파트로 들어가야 하는지 즉시 연결하는 감각을 만듭니다.",
+            practiceValue: "막혔을 때 바로 관련 파트를 다시 펼칠 수 있어야 학습 속도가 크게 올라갑니다.",
             totalRounds: 5,
             lives: 3,
         },
     };
 
     const BADGE_LIBRARY = {
-        first_sortie: { label: "First Sortie", desc: "첫 문제를 해결했습니다." },
-        hot_streak: { label: "Hot Streak", desc: "3연속 정답을 달성했습니다." },
-        clean_sortie: { label: "Clean Sortie", desc: "오답 없이 sortie를 완주했습니다." },
-        systems_brain: { label: "Systems Brain", desc: "HOTAS sortie를 승리했습니다." },
-        route_reader: { label: "Route Reader", desc: "Topic Intercept sortie를 승리했습니다." },
-        checklist_flow: { label: "Checklist Flow", desc: "Sequence sortie를 승리했습니다." },
-        triple_track: { label: "Triple Track", desc: "세 가지 drill을 모두 승리했습니다." },
-        academy_loop: { label: "Academy Loop", desc: "총 5회 sortie 승리를 달성했습니다." },
+        first_sortie: { label: "첫 정답", desc: "첫 문제를 맞혔습니다." },
+        hot_streak: { label: "3연속 정답", desc: "3연속 정답을 달성했습니다." },
+        clean_sortie: { label: "무실수 완주", desc: "오답 없이 훈련을 완주했습니다." },
+        systems_brain: { label: "HOTAS 감각", desc: "HOTAS 반응 훈련을 클리어했습니다." },
+        route_reader: { label: "구조 독파", desc: "가이드 구조 훈련을 클리어했습니다." },
+        checklist_flow: { label: "절차 숙달", desc: "체크리스트 플로우를 클리어했습니다." },
+        triple_track: { label: "세 갈래 완주", desc: "세 가지 훈련을 모두 클리어했습니다." },
+        academy_loop: { label: "반복 학습자", desc: "총 5회 훈련 클리어를 달성했습니다." },
     };
 
     const PILOT_RANKS = [
@@ -806,9 +825,9 @@
                         ${escapeHtml(buildPracticeHint(module))}
                     </div>
                     <div class="route-banner" style="margin-top:14px;">
-                        <button class="small-button" data-drill-start="sequence">시퀀스 드릴</button>
-                        <button class="small-button" data-drill-start="hotas">HOTAS 드릴</button>
-                        <button class="small-button" data-drill-start="topic">파트 매핑 드릴</button>
+                        <button class="small-button" data-drill-start="sequence">절차 훈련</button>
+                        <button class="small-button" data-drill-start="hotas">HOTAS 반응 훈련</button>
+                        <button class="small-button" data-drill-start="topic">구조 훈련</button>
                     </div>
                 </div>
             </div>
@@ -876,9 +895,9 @@
     function renderQuiz() {
         if (!state.quiz) {
             refs.quizShell.innerHTML = `
-                <div class="quiz-kicker">Ready Room</div>
-                <div class="quiz-question">드릴을 하나 선택해 시작하세요.</div>
-                <div class="quiz-context">시퀀스는 절차를, HOTAS는 손 감각을, Topic Intercept는 전체 가이드 구조를 익히는 데 좋습니다.</div>
+                <div class="quiz-kicker">훈련 대기</div>
+                <div class="quiz-question">훈련 하나를 선택해 시작하세요.</div>
+                <div class="quiz-context">체크리스트 플로우는 절차 감각, HOTAS 반응 훈련은 손 기억, 가이드 구조 훈련은 필요한 파트를 빨리 찾는 감각을 키웁니다.</div>
             `;
             return;
         }
@@ -887,45 +906,48 @@
         const session = state.quizSession;
         const completedRounds = session ? session.correct + session.wrong : 0;
         const accuracy = completedRounds ? Math.round((session.correct / completedRounds) * 100) : 0;
+        const drillConfig = session ? DRILL_CONFIGS[session.mode] : null;
         const nextActionLabel = !session
-            ? "새 sortie 시작"
+            ? "새 훈련 시작"
             : session.status === "active"
               ? question.answered
-                  ? "다음 웨이브"
-                  : "이번 sortie 재시작"
-              : "같은 sortie 재도전";
-        const statusLabel = session ? quizSessionStatusLabel(session) : "Ready";
+                  ? "다음 단계"
+                  : "이번 훈련 다시"
+              : "같은 훈련 재도전";
+        const statusLabel = session ? quizSessionStatusLabel(session) : "대기";
         const rank = currentPilotRank();
-        const objectiveText = session ? DRILL_CONFIGS[session.mode].objective : "";
+        const objectiveText = session ? drillConfig.objective : "";
+        const practiceValue = question.trainingValue || (drillConfig ? drillConfig.practiceValue : "");
+        const missionPoint = question.trainingPoint || question.reference;
         const badgeList = renderUnlockedBadges();
-        const sessionGrade = session ? quizSessionGrade(session) : "Cadet";
+        const sessionGrade = session ? quizSessionGrade(session) : "입문";
 
         refs.quizShell.innerHTML = `
             <div class="sortie-board">
                 <div class="sortie-topline">
-                    <div class="quiz-kicker">Mission Board</div>
+                    <div class="quiz-kicker">훈련 브리핑</div>
                     <div class="sortie-status">${escapeHtml(statusLabel)}</div>
                 </div>
                 <div class="sortie-grid">
                     <article class="sortie-tile">
-                        <span>Pilot Rank</span>
+                        <span>현재 등급</span>
                         <strong>${escapeHtml(rank.label)}</strong>
                         <small>${state.progress.xp} XP</small>
                     </article>
                     <article class="sortie-tile">
-                        <span>Sortie Progress</span>
+                        <span>진행 단계</span>
                         <strong>${session ? `${completedRounds}/${session.totalRounds}` : "0/0"}</strong>
-                        <small>${session ? `Round ${Math.min(session.round, session.totalRounds)} / ${session.totalRounds}` : ""}</small>
+                        <small>${session ? `문제 ${Math.min(session.round, session.totalRounds)} / ${session.totalRounds}` : ""}</small>
                     </article>
                     <article class="sortie-tile">
-                        <span>Combo / Lives</span>
+                        <span>콤보 / 여유</span>
                         <strong>${session ? `x${session.streak}` : "x0"} / ${session ? session.livesLeft : 0}</strong>
-                        <small>Best ${session ? session.bestStreak : 0}</small>
+                        <small>최고 콤보 ${session ? session.bestStreak : 0}</small>
                     </article>
                     <article class="sortie-tile">
-                        <span>Mission Grade</span>
+                        <span>훈련 평가</span>
                         <strong>${escapeHtml(sessionGrade)}</strong>
-                        <small>Accuracy ${accuracy}%</small>
+                        <small>정답률 ${accuracy}%</small>
                     </article>
                 </div>
                 <div class="sortie-progress">
@@ -933,12 +955,22 @@
                 </div>
                 <div class="sortie-brief">${escapeHtml(objectiveText)}</div>
                 <div class="sortie-badges">
-                    ${badgeList || `<span class="sortie-badge muted-badge">배지를 아직 열지 못했습니다. 3연속 정답이나 flawless sortie를 노려보세요.</span>`}
+                    ${badgeList || `<span class="sortie-badge muted-badge">배지는 첫 정답, 3연속 정답, 무실수 완주 같은 학습 성과로 열립니다.</span>`}
                 </div>
             </div>
             <div class="quiz-kicker">${escapeHtml(question.kicker)}</div>
             <div class="quiz-question">${escapeHtml(question.prompt)}</div>
             <div class="quiz-context">${escapeHtml(question.context)}</div>
+            <div class="quiz-brief-grid">
+                <article class="quiz-brief-card">
+                    <div class="quiz-brief-label">실전 연결</div>
+                    <div class="quiz-brief-copy">${escapeHtml(practiceValue)}</div>
+                </article>
+                <article class="quiz-brief-card">
+                    <div class="quiz-brief-label">이번 문제 포인트</div>
+                    <div class="quiz-brief-copy">${escapeHtml(missionPoint)}</div>
+                </article>
+            </div>
             <div class="question-choices">
                 ${question.choices
                     .map((choice, index) => {
@@ -1191,13 +1223,16 @@
         return {
             mode: "sequence",
             kicker: `${pack.modeLabel} / ${pack.title}`,
-            prompt: "다음 단계로 가장 맞는 절차를 고르세요.",
+            prompt: "지금 흐름에서 다음으로 이어져야 할 체크 절차는 무엇입니까?",
             context: `현재까지 진행:\n${contextSteps}`,
             choices,
             answerIndex,
             moduleId: moduleIdForTitle(pack.moduleTitle),
             reference: pack.moduleTitle,
             feedback: "",
+            trainingValue: pack.trainingGoal,
+            trainingPoint: pack.debrief,
+            explanation: pack.debrief,
         };
     }
 
@@ -1205,7 +1240,7 @@
         const raw = sample(HOTAS_QUESTIONS);
         return {
             mode: "hotas",
-            kicker: "HOTAS Reflex",
+            kicker: "HOTAS 반응 훈련 / HOTAS Reflex",
             prompt: raw.prompt,
             context: raw.context,
             choices: raw.choices,
@@ -1214,6 +1249,8 @@
             reference: raw.moduleTitle,
             feedback: "",
             explanation: raw.explanation,
+            trainingValue: "실제 전투나 센서 운용에서는 메뉴보다 손이 먼저 움직여야 합니다.",
+            trainingPoint: raw.practicalUse || raw.explanation,
         };
     }
 
@@ -1231,7 +1268,7 @@
 
         return {
             mode: "topic",
-            kicker: "Topic Intercept",
+            kicker: "가이드 구조 훈련 / Guide Intercept",
             prompt: "다음 토픽이 집중적으로 다뤄지는 파트를 고르세요.",
             context: `${topic.title}\n${topicPath}`,
             choices,
@@ -1239,6 +1276,9 @@
             moduleId: module.id,
             reference: formatPageRange(topic.pageStart, topic.pageEnd),
             feedback: "",
+            trainingValue: "실전 중 막히면 해당 파트를 빠르게 다시 열 수 있어야 학습 효율이 크게 올라갑니다.",
+            trainingPoint: `${module.meta.koTitle} 파트는 ${module.meta.summary}`,
+            explanation: `${module.meta.koTitle} 파트에서 이 토픽을 집중적으로 다룹니다.`,
         };
     }
 
@@ -1285,29 +1325,29 @@
 
     function quizSessionGrade(session) {
         if (session.status === "failed") {
-            return "Retry";
+            return "재도전";
         }
         if (session.wrong === 0 && session.correct >= session.totalRounds) {
-            return "Ace";
+            return "완숙";
         }
         const accuracy = quizSessionAccuracy(session);
         if (accuracy >= 90) {
-            return "Viper";
+            return "실전 준비";
         }
         if (accuracy >= 75) {
-            return "Lead";
+            return "안정권";
         }
-        return "Cadet";
+        return "입문";
     }
 
     function quizSessionStatusLabel(session) {
         if (session.status === "success") {
-            return "Sortie Complete";
+            return "훈련 완료";
         }
         if (session.status === "failed") {
-            return "Sortie Failed";
+            return "훈련 실패";
         }
-        return "Sortie Live";
+        return "훈련 진행 중";
     }
 
     function unlockBadge(badgeId) {
@@ -1398,12 +1438,12 @@
                 : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
         } else if (state.quiz.mode === "sequence") {
             state.quiz.feedback = correct
-                ? "정답. 절차는 결국 큰 흐름을 머릿속에 유지하는 것이 핵심입니다."
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다.`;
+                ? `정답. ${state.quiz.explanation}`
+                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
         } else {
             state.quiz.feedback = correct
-                ? "정답. 전체 가이드 구조를 외우기 시작하면 필요한 내용을 훨씬 빨리 찾게 됩니다."
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다.`;
+                ? `정답. ${state.quiz.explanation}`
+                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
         }
 
         if (session) {
@@ -1435,9 +1475,9 @@
                     unlockBadge("academy_loop");
                 }
 
-                state.quiz.feedback = `${state.quiz.feedback} Sortie complete. Grade ${quizSessionGrade(session)}, bonus ${successBonus} XP.`;
+                state.quiz.feedback = `${state.quiz.feedback} 훈련 완료. 평가 ${quizSessionGrade(session)}, 보너스 ${successBonus} XP를 획득했습니다.`;
             } else if (session.status === "failed") {
-                state.quiz.feedback = `${state.quiz.feedback} Sortie 실패. 실수 여유를 모두 소모했습니다.`;
+                state.quiz.feedback = `${state.quiz.feedback} 훈련 실패. 실수 여유를 모두 소모했습니다.`;
             }
         }
 

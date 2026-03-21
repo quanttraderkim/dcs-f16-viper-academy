@@ -945,6 +945,37 @@
             margin-bottom: 18px;
         }
 
+        .quiz-brief-grid {
+            margin-bottom: 18px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .quiz-brief-card {
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 237, 192, 0.08);
+            display: grid;
+            gap: 8px;
+        }
+
+        .quiz-brief-label {
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-family: "Barlow Condensed", sans-serif;
+        }
+
+        .quiz-brief-copy {
+            color: var(--text-body);
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
         .choice-button {
             width: 100%;
             text-align: left;
@@ -1331,6 +1362,10 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .quiz-brief-grid {
+                grid-template-columns: 1fr;
+            }
+
             .workspace.focus-mode {
                 gap: 18px;
             }
@@ -1504,19 +1539,19 @@
                     </p>
                     <div class="drill-grid">
                         <article class="drill-card">
-                            <h3>Sequence Sortie</h3>
-                            <p>시동, 이륙, 착륙 절차를 순서 감각으로 익힙니다.</p>
-                            <button class="action-button" data-drill="sequence">시퀀스 시작</button>
+                            <h3>체크리스트 플로우</h3>
+                            <p>시동, 활주, 이륙, 착륙 절차를 실제 체크 흐름처럼 익힙니다.</p>
+                            <button class="action-button" data-drill="sequence">절차 훈련 시작</button>
                         </article>
                         <article class="drill-card">
-                            <h3>HOTAS Reflex</h3>
-                            <p>스틱과 스로틀 스위치 역할을 한국어 설명과 영어 용어로 동시에 외웁니다.</p>
-                            <button class="action-button" data-drill="hotas">HOTAS 시작</button>
+                            <h3>HOTAS 반응 훈련</h3>
+                            <p>스틱과 스로틀 스위치를 실제 상황 문맥과 함께 손에 익힙니다.</p>
+                            <button class="action-button" data-drill="hotas">HOTAS 훈련 시작</button>
                         </article>
                         <article class="drill-card">
-                            <h3>Topic Intercept</h3>
-                            <p>가이드 전체 목차를 기반으로 “이 토픽이 어느 파트에 속하는지” 맞힙니다.</p>
-                            <button class="action-button" data-drill="topic">파트 매핑 시작</button>
+                            <h3>가이드 구조 훈련</h3>
+                            <p>가이드 전체 목차를 바탕으로 필요한 파트를 빠르게 찾는 감각을 익힙니다.</p>
+                            <button class="action-button" data-drill="topic">구조 훈련 시작</button>
                         </article>
                     </div>
                     <div class="quiz-shell" id="quizShell"></div>
