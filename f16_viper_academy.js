@@ -453,7 +453,7 @@
         quizSession: null,
         searchResults: [],
         glossaryFilter: "",
-        sidebarCollapsed: loadLayout().sidebarCollapsed,
+        layoutMode: loadLayout().sidebarMode,
         lastGuideSearchTerm: "",
     };
 
@@ -477,7 +477,8 @@
 
     function captureRefs() {
         refs.workspace = document.getElementById("workspace");
-        refs.workspaceToggle = document.getElementById("workspaceToggle");
+        refs.workspaceToolbar = document.getElementById("workspaceToolbar");
+        refs.layoutButtons = Array.from(document.querySelectorAll("[data-layout-mode]"));
         refs.workspaceAside = document.querySelector("#workspace > aside");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
@@ -493,6 +494,7 @@
         refs.guideSearchInput = document.getElementById("guideSearchInput");
         refs.guideSearchButton = document.getElementById("guideSearchButton");
         refs.searchResults = document.getElementById("searchResults");
+        refs.searchResultsStatus = document.getElementById("searchResultsStatus");
         refs.imageModal = document.getElementById("imageModal");
         refs.imageModalTitle = document.getElementById("imageModalTitle");
         refs.imageModalImage = document.getElementById("imageModalImage");
@@ -514,7 +516,7 @@
             state.glossaryFilter = "";
             renderGlossary();
         });
-        refs.guideSearchButton.addEventListener("click", runGuideSearch);
+        refs.guideSearchButton.addEventListener("click", () => runGuideSearch(true));
         refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
         refs.guideSearchInput.addEventListener("compositionstart", () => {
             isGuideSearchComposing = true;
@@ -526,10 +528,10 @@
         refs.guideSearchInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter" && !isGuideSearchComposing && !event.isComposing) {
                 window.clearTimeout(guideSearchTimer);
-                runGuideSearch();
+                runGuideSearch(true);
             }
         });
-        refs.workspaceToggle.addEventListener("click", toggleSidebar);
+        refs.workspaceToolbar.addEventListener("click", handleWorkspaceToolbarClick);
         refs.imageModal.addEventListener("click", handleImageModalClick);
         refs.imageModalClose.addEventListener("click", closeImageModal);
         refs.imageModalImage.addEventListener("error", handleModalImageError);
@@ -746,6 +748,10 @@
         const translationAvailable = hasKoTranslation(state.selectedPage);
         const languageBadge =
             state.readerLanguage === "ko" && translationAvailable ? "한국어 기계번역" : "영문 추출본";
+        const readerHeadline =
+            state.readerLanguage === "ko" && translationAvailable
+                ? "한국어로 먼저 이해하고, 필요할 때 바로 영문 용어로 전환하세요."
+                : "영문 원문 기반 페이지입니다. 필요하면 인접 페이지도 함께 확인하세요.";
 
         refs.moduleDetail.innerHTML = `
             <div class="detail-headline">
@@ -853,7 +859,16 @@
                         </div>
                     </div>
                 </div>
-                <article class="reader-body">${escapeHtml(pageText)}</article>
+                <section class="reader-body">
+                    <div class="reader-body-head">
+                        <div class="reader-body-title">
+                            <span class="reader-body-label">${escapeHtml(state.readerLanguage === "ko" && translationAvailable ? "Korean Reader" : "English Reader")}</span>
+                            <div class="muted">${escapeHtml(readerHeadline)}</div>
+                        </div>
+                        <span class="meta-chip">${escapeHtml(languageBadge)}</span>
+                    </div>
+                    <article class="reader-copy">${escapeHtml(pageText)}</article>
+                </section>
             </div>
         `;
     }
@@ -1203,10 +1218,11 @@
     }
 
     function buildTopicQuestion() {
-        const module = sample(state.modules);
-        const topic = sample(module.topics);
+        const eligibleModules = state.modules.filter((item) => item.partNumber > 0 && item.topics.some((topic) => !topic.synthetic));
+        const module = sample(eligibleModules);
+        const topic = sample(module.topics.filter((item) => !item.synthetic));
         const correct = module;
-        const distractorModules = shuffle(state.modules.filter((item) => item.id !== module.id)).slice(0, 3);
+        const distractorModules = shuffle(eligibleModules.filter((item) => item.id !== module.id)).slice(0, 3);
         const choices = shuffle([correct, ...distractorModules]).map(
             (item) => `${item.meta.koTitle} / ${shortEnglishTitle(item.title)}`
         );
@@ -1362,6 +1378,7 @@
                 session.streak += 1;
                 session.bestStreak = Math.max(session.bestStreak, session.streak);
                 session.score += 100 + (session.streak - 1) * 25;
+                unlockBadge("first_sortie");
             } else {
                 session.wrong += 1;
                 session.streak = 0;
@@ -1370,7 +1387,6 @@
             }
 
             state.progress.bestStreak = Math.max(state.progress.bestStreak || 0, session.bestStreak);
-            unlockBadge("first_sortie");
             if (session.bestStreak >= 3) {
                 unlockBadge("hot_streak");
             }
@@ -1432,13 +1448,14 @@
         renderQuiz();
     }
 
-    function runGuideSearch() {
+    function runGuideSearch(announce = false) {
         window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
         if (term.length < 2) {
             state.lastGuideSearchTerm = "";
             state.searchResults = [];
             renderSearchResults();
+            updateSearchStatus("");
             return;
         }
         state.lastGuideSearchTerm = term;
@@ -1474,6 +1491,7 @@
             ) {
                 state.searchResults = results;
                 renderSearchResults();
+                updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
                 return;
             }
         }
@@ -1492,6 +1510,7 @@
             ) {
                 state.searchResults = results;
                 renderSearchResults();
+                updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
                 return;
             }
 
@@ -1511,6 +1530,7 @@
                 ) {
                     state.searchResults = results;
                     renderSearchResults();
+                    updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
                     return;
                 }
             }
@@ -1550,6 +1570,7 @@
 
         state.searchResults = results;
         renderSearchResults();
+        updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
     }
 
     function scheduleGuideSearch() {
@@ -1562,29 +1583,48 @@
             state.lastGuideSearchTerm = "";
             state.searchResults = [];
             renderSearchResults();
+            updateSearchStatus("");
             return;
         }
         state.lastGuideSearchTerm = term;
-        guideSearchTimer = window.setTimeout(runGuideSearch, 160);
+        guideSearchTimer = window.setTimeout(() => runGuideSearch(false), 160);
     }
 
-    function toggleSidebar() {
-        state.sidebarCollapsed = !state.sidebarCollapsed;
+    function handleWorkspaceToolbarClick(event) {
+        const modeButton = event.target.closest("[data-layout-mode]");
+        if (!modeButton) {
+            return;
+        }
+        setLayoutMode(modeButton.dataset.layoutMode);
+    }
+
+    function setLayoutMode(nextMode) {
+        if (!["default", "compact", "focus"].includes(nextMode)) {
+            return;
+        }
+        state.layoutMode = nextMode;
         saveLayout();
         applyLayout();
     }
 
     function applyLayout() {
-        if (!refs.workspace || !refs.workspaceToggle) {
+        if (!refs.workspace) {
             return;
         }
-        refs.workspace.classList.toggle("focus-mode", state.sidebarCollapsed);
+        const isFocus = state.layoutMode === "focus";
+        const isCompact = state.layoutMode === "compact";
+
+        refs.workspace.classList.toggle("compact-mode", isCompact);
+        refs.workspace.classList.toggle("focus-mode", isFocus);
         if (refs.workspaceAside) {
-            refs.workspaceAside.inert = state.sidebarCollapsed;
-            refs.workspaceAside.setAttribute("aria-hidden", state.sidebarCollapsed ? "true" : "false");
+            refs.workspaceAside.inert = isFocus;
+            refs.workspaceAside.setAttribute("aria-hidden", isFocus ? "true" : "false");
         }
-        refs.workspaceToggle.textContent = state.sidebarCollapsed ? "목차 펼치기" : "집중 보기";
-        refs.workspaceToggle.setAttribute("aria-pressed", state.sidebarCollapsed ? "true" : "false");
+        (refs.layoutButtons || []).forEach((button) => {
+            const isActive = button.dataset.layoutMode === state.layoutMode;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
     }
 
     function openModule(moduleId, page) {
@@ -1723,11 +1763,18 @@
         try {
             const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
             if (!raw) {
-                return { sidebarCollapsed: false };
+                return { sidebarMode: "default" };
             }
-            return { sidebarCollapsed: Boolean(JSON.parse(raw).sidebarCollapsed) };
+            const parsed = JSON.parse(raw);
+            if (parsed && ["default", "compact", "focus"].includes(parsed.sidebarMode)) {
+                return { sidebarMode: parsed.sidebarMode };
+            }
+            if (parsed && Object.prototype.hasOwnProperty.call(parsed, "sidebarCollapsed")) {
+                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default" };
+            }
+            return { sidebarMode: "default" };
         } catch (error) {
-            return { sidebarCollapsed: false };
+            return { sidebarMode: "default" };
         }
     }
 
@@ -1738,8 +1785,25 @@
     function saveLayout() {
         localStorage.setItem(
             LAYOUT_STORAGE_KEY,
-            JSON.stringify({ sidebarCollapsed: state.sidebarCollapsed })
+            JSON.stringify({ sidebarMode: state.layoutMode })
         );
+    }
+
+    function updateSearchStatus(message) {
+        if (!refs.searchResultsStatus) {
+            return;
+        }
+        refs.searchResultsStatus.textContent = message;
+    }
+
+    function buildSearchAnnouncement(term, resultCount) {
+        if (!term) {
+            return "";
+        }
+        if (!resultCount) {
+            return `${term} 검색 결과가 없습니다.`;
+        }
+        return `${term} 검색 결과 ${resultCount}건입니다.`;
     }
 
     function shortEnglishTitle(title) {
