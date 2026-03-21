@@ -246,6 +246,7 @@ def render_page_images(
     page_count: int,
     image_scale: float,
     image_quality: int,
+    progress_label: str,
 ) -> None:
     try:
         import fitz
@@ -265,7 +266,7 @@ def render_page_images(
         pixmap.save(image_path, jpg_quality=image_quality)
         if page_index == 0 or (page_index + 1) % 25 == 0 or page_index + 1 == page_count:
             print(
-                f"[extractor] Rendered page image {page_index + 1}/{page_count}",
+                f"[extractor] Rendered {progress_label} {page_index + 1}/{page_count}",
                 file=sys.stderr,
             )
 
@@ -289,14 +290,26 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--image-scale",
         type=float,
-        default=0.75,
-        help="Scale factor for rendered page images",
+        default=0.95,
+        help="Scale factor for inline reader page images",
     )
     parser.add_argument(
         "--image-quality",
         type=int,
-        default=60,
-        help="JPEG quality for rendered page images",
+        default=72,
+        help="JPEG quality for inline reader page images",
+    )
+    parser.add_argument(
+        "--hd-image-scale",
+        type=float,
+        default=1.8,
+        help="Scale factor for full-screen modal page images",
+    )
+    parser.add_argument(
+        "--hd-image-quality",
+        type=int,
+        default=84,
+        help="JPEG quality for full-screen modal page images",
     )
     return parser.parse_args()
 
@@ -313,6 +326,7 @@ def main() -> int:
     ensure_dir(output_dir)
     ensure_dir(output_dir / "sections")
     image_dir = output_dir / "page_images"
+    image_hd_dir = output_dir / "page_images_hd"
 
     print(f"[extractor] Opening PDF: {pdf_path}", file=sys.stderr)
     reader = PdfReader(str(pdf_path))
@@ -336,6 +350,7 @@ def main() -> int:
         "pageCount": page_count,
         "extractedAt": datetime.now(timezone.utc).astimezone().isoformat(),
         "pageImageDir": "page_images" if args.render_page_images else None,
+        "pageImageHdDir": "page_images_hd" if args.render_page_images else None,
         "pageImageFormat": "jpg" if args.render_page_images else None,
         "metadata": metadata,
         "outline": [
@@ -360,6 +375,15 @@ def main() -> int:
             page_count=page_count,
             image_scale=args.image_scale,
             image_quality=args.image_quality,
+            progress_label="preview image",
+        )
+        render_page_images(
+            pdf_path=pdf_path,
+            image_dir=image_hd_dir,
+            page_count=page_count,
+            image_scale=args.hd_image_scale,
+            image_quality=args.hd_image_quality,
+            progress_label="HD image",
         )
 
     print("[extractor] Writing files", file=sys.stderr)

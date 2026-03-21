@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viper Academy</title>
+    <script>
+        (function redirectToAcademy() {
+            const pathname = window.location.pathname || "/";
+            const basePath = pathname.endsWith("/") ? pathname : pathname.replace(/\/[^/]*$/, "/");
+            window.location.replace(basePath + "f16_viper_academy.html");
+        })();
+    </script>
+</head>
+<body>
+    <p><a href="f16_viper_academy.html">Viper Academy 열기</a></p>
+</body>
+</html>

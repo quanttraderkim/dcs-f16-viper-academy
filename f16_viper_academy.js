@@ -4,9 +4,12 @@
         tree: [],
     };
     const pageTexts = window.__DCS_F16_GUIDE_PAGES__ || [];
+    const pageTextsKo = window.__DCS_F16_GUIDE_PAGES_KO__ || [];
+    const hasAnyKoTranslation = pageTextsKo.some((text) => Boolean(String(text || "").trim()));
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
+    const LAYOUT_STORAGE_KEY = "viper-academy-layout-v1";
 
     const PART_BRIEFINGS = {
         "Part 1 - Introduction": {
@@ -260,7 +263,9 @@
         {
             title: "Cold Start Flow",
             moduleTitle: "Part 4 - Start-Up Procedure",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "램프에서 막히지 않으려면, 시동은 개별 스위치보다 큰 단계 흐름을 먼저 기억해야 합니다.",
+            debrief: "시동은 전원, 엔진, 항전장비, INS, 데이터링크, IFF 순서의 큰 줄기를 유지하는 것이 핵심입니다.",
             steps: [
                 { ko: "기체 전원 공급", en: "Provide Aircraft Power" },
                 { ko: "시동 전 사전 설정", en: "Perform Aircraft Pre-Start Setup" },
@@ -276,7 +281,9 @@
         {
             title: "Takeoff Run",
             moduleTitle: "Part 5 - Taxi & Takeoff",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "활주로에서 꼬이는 가장 큰 이유는 NWS, Probe Heat, 브레이크, 스풀업 순서가 흐트러지기 때문입니다.",
+            debrief: "이륙 전 체크는 활주로 진입 뒤에 급하게 하는 것이 아니라, 가속 전에 기체 상태를 안정시키는 과정입니다.",
             steps: [
                 { ko: "활주로 정렬", en: "Line up on the runway" },
                 { ko: "Taxi Light 끄기", en: "Turn OFF taxi light" },
@@ -295,7 +302,9 @@
         {
             title: "Landing Pattern",
             moduleTitle: "Part 6 - Landing",
-            modeLabel: "Sequence Sortie",
+            modeLabel: "체크리스트 플로우 / Checklist Flow",
+            trainingGoal: "착륙은 숫자 암기보다 패턴 흐름과 AOA 감각이 먼저 몸에 들어와야 안정됩니다.",
+            debrief: "오버헤드 브레이크부터 숏 파이널까지 흐름을 머릿속에 고정하면 접근 중에도 시선이 덜 흔들립니다.",
             steps: [
                 { ko: "초기 진입", en: "Initial Approach" },
                 { ko: "오버헤드 브레이크", en: "Overhead Break" },
@@ -316,6 +325,7 @@
             answer: "TMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "TMS는 Target Management Switch 입니다. 표적 관리와 센서 흐름에서 핵심 입력입니다.",
+            practicalUse: "레이더 락이나 센서 우선순위를 바꿀 때 손에서 바로 나와야 하는 입력입니다.",
         },
         {
             prompt: "디스플레이 포커스를 다루는 Display Management Switch 는 무엇입니까?",
@@ -324,6 +334,7 @@
             answer: "DMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "DMS는 Display Management Switch 입니다. MFD와 화면 우선순위를 다룰 때 자주 쓰입니다.",
+            practicalUse: "SOI가 어디에 있는지 헷갈리면 센서 운용 전체가 꼬이기 시작합니다.",
         },
         {
             prompt: "Countermeasures Switch 의 약어는 무엇입니까?",
@@ -332,6 +343,7 @@
             answer: "CMS",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "CMS는 Countermeasures Switch 입니다. 방어체계 운용의 핵심 스위치입니다.",
+            practicalUse: "RWR 경고가 들어왔을 때 생각보다 먼저 손이 가야 하는 스위치입니다.",
         },
         {
             prompt: "지상 활주 중 노즈휠 스티어링을 켜는 버튼은 무엇입니까?",
@@ -340,6 +352,7 @@
             answer: "NWS A/R DISC & MSL STEP Button",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "NWS A/R DISC & MSL STEP Button 은 지상에서는 Nosewheel Steering, 공중에서는 다른 맥락의 기능을 가집니다.",
+            practicalUse: "활주 중 방향을 못 잡거나 70노트 해제 타이밍을 놓치면 이륙이 불안정해집니다.",
         },
         {
             prompt: "오토파일럿을 즉시 끊는 역할을 하는 입력은 무엇입니까?",
@@ -348,6 +361,7 @@
             answer: "Paddle Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Paddle Switch 는 depressed 시 Autopilot override 역할을 합니다.",
+            practicalUse: "접근이나 저고도 비행 중 기체가 내 손으로 바로 돌아와야 할 때 중요합니다.",
         },
         {
             prompt: "Dogfight / Missile Override / Center 3단 위치를 가지는 조작은 무엇입니까?",
@@ -356,6 +370,7 @@
             answer: "Dogfight Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Dogfight Switch 는 근접 공중전 상태 전환을 매우 빠르게 수행하는 3위치 스위치입니다.",
+            practicalUse: "A-A 상황에서 모드를 메뉴로 찾는 순간 이미 늦는 경우가 많습니다.",
         },
         {
             prompt: "센서 화면의 시야각을 바꾸는 Expand / FOV 조작은 무엇입니까?",
@@ -364,6 +379,7 @@
             answer: "Expand/FOV Button",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Expand/FOV Button 은 현재 선택된 센서의 시야각을 전환할 때 사용됩니다.",
+            practicalUse: "TGP나 레이더 화면을 더 자세히 보거나 넓게 훑을 때 즉시 쓰게 됩니다.",
         },
         {
             prompt: "레이더 또는 TGP 커서를 실제로 슬루하는 입력은 무엇입니까?",
@@ -372,6 +388,7 @@
             answer: "Radar Cursor/Enable Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Radar Cursor/Enable Switch 는 FCR, TGP, 무장 비디오에서 커서를 움직이는 핵심 입력입니다.",
+            practicalUse: "표적을 찾고 옮기고 지정하는 모든 흐름이 이 입력 위에 올라갑니다.",
         },
         {
             prompt: "레이더 안테나 고도를 바꾸는 조작은 무엇입니까?",
@@ -380,6 +397,7 @@
             answer: "Radar Antenna Elevation Knob",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Radar Antenna Elevation Knob 는 레이더 탐색 볼륨을 수직 방향으로 조정할 때 사용합니다.",
+            practicalUse: "표적이 안 보일 때 레이더 모드보다 먼저 확인해야 할 경우가 많습니다.",
         },
         {
             prompt: "Speed Brake 를 열고 닫는 3위치 조작은 무엇입니까?",
@@ -388,20 +406,74 @@
             answer: "Speed Brake Switch",
             moduleTitle: "Part 9 - HOTAS",
             explanation: "Speed Brake Switch 는 AFT로 전개, FWD로 수납, Center로 현 상태 유지입니다.",
+            practicalUse: "패턴 진입과 에너지 정리에 직접 연결되는 만큼 손 감각이 중요합니다.",
         },
     ];
 
+    const DRILL_CONFIGS = {
+        sequence: {
+            label: "체크리스트 플로우",
+            objective: "시동, 활주, 이륙, 착륙 절차를 실제 체크리스트 흐름처럼 반복 훈련합니다.",
+            practiceValue: "DCS 초반 막힘의 대부분은 절차 흐름이 끊기는 데서 옵니다. 이 훈련은 그 구간을 줄이는 데 가장 직접적입니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
+        hotas: {
+            label: "HOTAS 반응 훈련",
+            objective: "센서와 무장을 다루는 핵심 스위치를 실제 상황 문맥과 함께 손에 익힙니다.",
+            practiceValue: "실전에서는 메뉴를 읽는 속도보다 손이 먼저 가는 속도가 더 중요합니다.",
+            totalRounds: 6,
+            lives: 3,
+        },
+        topic: {
+            label: "가이드 구조 훈련",
+            objective: "토픽을 보고 어느 파트로 들어가야 하는지 즉시 연결하는 감각을 만듭니다.",
+            practiceValue: "막혔을 때 바로 관련 파트를 다시 펼칠 수 있어야 학습 속도가 크게 올라갑니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
+    };
+
+    const BADGE_LIBRARY = {
+        first_sortie: { label: "첫 정답", desc: "첫 문제를 맞혔습니다." },
+        hot_streak: { label: "3연속 정답", desc: "3연속 정답을 달성했습니다." },
+        clean_sortie: { label: "무실수 완주", desc: "오답 없이 훈련을 완주했습니다." },
+        systems_brain: { label: "HOTAS 감각", desc: "HOTAS 반응 훈련을 클리어했습니다." },
+        route_reader: { label: "구조 독파", desc: "가이드 구조 훈련을 클리어했습니다." },
+        checklist_flow: { label: "절차 숙달", desc: "체크리스트 플로우를 클리어했습니다." },
+        triple_track: { label: "세 갈래 완주", desc: "세 가지 훈련을 모두 클리어했습니다." },
+        academy_loop: { label: "반복 학습자", desc: "총 5회 훈련 클리어를 달성했습니다." },
+    };
+
+    const PILOT_RANKS = [
+        { xp: 0, label: "Cadet" },
+        { xp: 120, label: "Wingman" },
+        { xp: 260, label: "Flight Lead" },
+        { xp: 520, label: "Viper Driver" },
+        { xp: 900, label: "Mission Commander" },
+    ];
+
     const refs = {};
+    let guideSearchTimer = 0;
+    let isGuideSearchComposing = false;
 
     const state = {
         modules: [],
         glossary: [...GLOSSARY],
         selectedModuleId: null,
         selectedPage: 1,
+        readerLanguage: hasAnyKoTranslation ? "ko" : "en",
+        modalImageUrl: "",
+        modalImageTitle: "",
+        modalImagePage: 1,
+        modalTriedStandardImage: false,
         progress: loadProgress(),
         quiz: null,
+        quizSession: null,
         searchResults: [],
         glossaryFilter: "",
+        layoutMode: loadLayout().sidebarMode,
+        lastGuideSearchTerm: "",
     };
 
     document.addEventListener("DOMContentLoaded", initialize);
@@ -411,14 +483,22 @@
         state.modules = buildModules();
         state.selectedModuleId = state.modules[0] ? state.modules[0].id : null;
         state.selectedPage = state.modules[0] ? state.modules[0].pageStart : 1;
+        if (!hasAnyKoTranslation) {
+            state.readerLanguage = "en";
+        }
         bindEvents();
         renderRouteList();
         renderGlossary();
         renderAll();
-        startDrill("sequence");
+        applyLayout();
+        startDrill("sequence", { countRun: false });
     }
 
     function captureRefs() {
+        refs.workspace = document.getElementById("workspace");
+        refs.workspaceToolbar = document.getElementById("workspaceToolbar");
+        refs.layoutButtons = Array.from(document.querySelectorAll("[data-layout-mode]"));
+        refs.workspaceAside = document.querySelector("#workspace > aside");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
         refs.statModules = document.getElementById("statModules");
@@ -433,6 +513,12 @@
         refs.guideSearchInput = document.getElementById("guideSearchInput");
         refs.guideSearchButton = document.getElementById("guideSearchButton");
         refs.searchResults = document.getElementById("searchResults");
+        refs.searchResultsStatus = document.getElementById("searchResultsStatus");
+        refs.imageModal = document.getElementById("imageModal");
+        refs.imageModalTitle = document.getElementById("imageModalTitle");
+        refs.imageModalImage = document.getElementById("imageModalImage");
+        refs.imageModalFallback = document.getElementById("imageModalFallback");
+        refs.imageModalClose = document.getElementById("imageModalClose");
     }
 
     function bindEvents() {
@@ -449,10 +535,29 @@
             state.glossaryFilter = "";
             renderGlossary();
         });
-        refs.guideSearchButton.addEventListener("click", runGuideSearch);
+        refs.guideSearchButton.addEventListener("click", () => runGuideSearch(true));
+        refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
+        refs.guideSearchInput.addEventListener("compositionstart", () => {
+            isGuideSearchComposing = true;
+        });
+        refs.guideSearchInput.addEventListener("compositionend", () => {
+            isGuideSearchComposing = false;
+            scheduleGuideSearch();
+        });
         refs.guideSearchInput.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                runGuideSearch();
+            if (event.key === "Enter" && !isGuideSearchComposing && !event.isComposing) {
+                window.clearTimeout(guideSearchTimer);
+                runGuideSearch(true);
+            }
+        });
+        refs.workspaceToolbar.addEventListener("click", handleWorkspaceToolbarClick);
+        refs.imageModal.addEventListener("click", handleImageModalClick);
+        refs.imageModalClose.addEventListener("click", closeImageModal);
+        refs.imageModalImage.addEventListener("error", handleModalImageError);
+        refs.imageModalImage.addEventListener("load", handleModalImageLoad);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && refs.imageModal.classList.contains("open")) {
+                closeImageModal();
             }
         });
         document.querySelectorAll("[data-drill]").forEach((button) => {
@@ -569,6 +674,7 @@
         renderModuleDetail();
         renderQuiz();
         renderSearchResults();
+        applyLayout();
     }
 
     function renderRouteList() {
@@ -654,10 +760,17 @@
         }
 
         state.selectedPage = clamp(state.selectedPage, module.pageStart, module.pageEnd);
-        const pageText = pageTexts[state.selectedPage - 1] || "로컬 페이지 텍스트가 없습니다.";
+        const pageText = currentReaderText(state.selectedPage);
         const moduleScore = getModuleScore(module.id);
         const topSections = module.topics.slice(0, 14);
         const imageUrl = pageImageUrl(state.selectedPage);
+        const translationAvailable = hasKoTranslation(state.selectedPage);
+        const languageBadge =
+            state.readerLanguage === "ko" && translationAvailable ? "한국어 기계번역" : "영문 추출본";
+        const readerHeadline =
+            state.readerLanguage === "ko" && translationAvailable
+                ? "한국어로 먼저 이해하고, 필요할 때 바로 영문 용어로 전환하세요."
+                : "영문 원문 기반 페이지입니다. 필요하면 인접 페이지도 함께 확인하세요.";
 
         refs.moduleDetail.innerHTML = `
             <div class="detail-headline">
@@ -712,9 +825,9 @@
                         ${escapeHtml(buildPracticeHint(module))}
                     </div>
                     <div class="route-banner" style="margin-top:14px;">
-                        <button class="small-button" data-drill-start="sequence">시퀀스 드릴</button>
-                        <button class="small-button" data-drill-start="hotas">HOTAS 드릴</button>
-                        <button class="small-button" data-drill-start="topic">파트 매핑 드릴</button>
+                        <button class="small-button" data-drill-start="sequence">절차 훈련</button>
+                        <button class="small-button" data-drill-start="hotas">HOTAS 반응 훈련</button>
+                        <button class="small-button" data-drill-start="topic">구조 훈련</button>
                     </div>
                 </div>
             </div>
@@ -722,9 +835,18 @@
             <div class="reader-head">
                 <div>
                     <div class="panel-kicker">Guide Reader</div>
-                    <div class="muted">현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd}</div>
+                    <div class="muted">현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd} / ${languageBadge}</div>
                 </div>
                 <div class="reader-controls">
+                    <div class="reader-language">
+                        <span class="reader-language-label">Text</span>
+                        <button class="reader-language-button ${state.readerLanguage === "ko" ? "active" : ""}" data-reader-language="ko" type="button" ${translationAvailable ? "" : "disabled"}>
+                            한국어
+                        </button>
+                        <button class="reader-language-button ${state.readerLanguage === "en" ? "active" : ""}" data-reader-language="en" type="button">
+                            English
+                        </button>
+                    </div>
                     <button class="small-button" data-page-action="first">처음</button>
                     <button class="small-button" data-page-action="prev">이전</button>
                     <button class="small-button" data-page-action="next">다음</button>
@@ -734,21 +856,38 @@
             <div class="reader-meta">
                 <span class="meta-chip">${escapeHtml(module.meta.koTitle)}</span>
                 <span class="meta-chip">${formatPageRange(state.selectedPage, state.selectedPage)}</span>
+                <span class="meta-chip">${escapeHtml(languageBadge)}</span>
             </div>
             <div class="reader-layout">
                 <div class="reader-visual">
-                    <img
-                        class="reader-image"
-                        src="${escapeHtml(imageUrl)}"
-                        alt="Guide page ${state.selectedPage}"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                    >
-                    <div class="reader-fallback">
-                        이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
-                        <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
+                    <div class="reader-visual-top">
+                        <div class="reader-visual-title">Page Visual / ${formatPageRange(state.selectedPage, state.selectedPage)}</div>
+                        <button class="action-button" data-open-image-modal="${state.selectedPage}" type="button">크게 보기</button>
+                    </div>
+                    <div class="reader-image-shell">
+                        <img
+                            class="reader-image"
+                            src="${escapeHtml(imageUrl)}"
+                            alt="Guide page ${state.selectedPage}"
+                            data-open-image-modal="${state.selectedPage}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <div class="reader-fallback">
+                            이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
+                            <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
+                        </div>
                     </div>
                 </div>
-                <article class="reader-body">${escapeHtml(pageText)}</article>
+                <section class="reader-body">
+                    <div class="reader-body-head">
+                        <div class="reader-body-title">
+                            <span class="reader-body-label">${escapeHtml(state.readerLanguage === "ko" && translationAvailable ? "Korean Reader" : "English Reader")}</span>
+                            <div class="muted">${escapeHtml(readerHeadline)}</div>
+                        </div>
+                        <span class="meta-chip">${escapeHtml(languageBadge)}</span>
+                    </div>
+                    <article class="reader-copy">${escapeHtml(pageText)}</article>
+                </section>
             </div>
         `;
     }
@@ -756,18 +895,82 @@
     function renderQuiz() {
         if (!state.quiz) {
             refs.quizShell.innerHTML = `
-                <div class="quiz-kicker">Ready Room</div>
-                <div class="quiz-question">드릴을 하나 선택해 시작하세요.</div>
-                <div class="quiz-context">시퀀스는 절차를, HOTAS는 손 감각을, Topic Intercept는 전체 가이드 구조를 익히는 데 좋습니다.</div>
+                <div class="quiz-kicker">훈련 대기</div>
+                <div class="quiz-question">훈련 하나를 선택해 시작하세요.</div>
+                <div class="quiz-context">체크리스트 플로우는 절차 감각, HOTAS 반응 훈련은 손 기억, 가이드 구조 훈련은 필요한 파트를 빨리 찾는 감각을 키웁니다.</div>
             `;
             return;
         }
 
         const question = state.quiz;
+        const session = state.quizSession;
+        const completedRounds = session ? session.correct + session.wrong : 0;
+        const accuracy = completedRounds ? Math.round((session.correct / completedRounds) * 100) : 0;
+        const drillConfig = session ? DRILL_CONFIGS[session.mode] : null;
+        const nextActionLabel = !session
+            ? "새 훈련 시작"
+            : session.status === "active"
+              ? question.answered
+                  ? "다음 단계"
+                  : "이번 훈련 다시"
+              : "같은 훈련 재도전";
+        const statusLabel = session ? quizSessionStatusLabel(session) : "대기";
+        const rank = currentPilotRank();
+        const objectiveText = session ? drillConfig.objective : "";
+        const practiceValue = question.trainingValue || (drillConfig ? drillConfig.practiceValue : "");
+        const missionPoint = question.trainingPoint || question.reference;
+        const badgeList = renderUnlockedBadges();
+        const sessionGrade = session ? quizSessionGrade(session) : "입문";
+
         refs.quizShell.innerHTML = `
+            <div class="sortie-board">
+                <div class="sortie-topline">
+                    <div class="quiz-kicker">훈련 브리핑</div>
+                    <div class="sortie-status">${escapeHtml(statusLabel)}</div>
+                </div>
+                <div class="sortie-grid">
+                    <article class="sortie-tile">
+                        <span>현재 등급</span>
+                        <strong>${escapeHtml(rank.label)}</strong>
+                        <small>${state.progress.xp} XP</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>진행 단계</span>
+                        <strong>${session ? `${completedRounds}/${session.totalRounds}` : "0/0"}</strong>
+                        <small>${session ? `문제 ${Math.min(session.round, session.totalRounds)} / ${session.totalRounds}` : ""}</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>콤보 / 여유</span>
+                        <strong>${session ? `x${session.streak}` : "x0"} / ${session ? session.livesLeft : 0}</strong>
+                        <small>최고 콤보 ${session ? session.bestStreak : 0}</small>
+                    </article>
+                    <article class="sortie-tile">
+                        <span>훈련 평가</span>
+                        <strong>${escapeHtml(sessionGrade)}</strong>
+                        <small>정답률 ${accuracy}%</small>
+                    </article>
+                </div>
+                <div class="sortie-progress">
+                    <div class="sortie-progress-fill" style="width:${session ? quizSessionProgressPercent(session) : 0}%;"></div>
+                </div>
+                <div class="sortie-brief">${escapeHtml(objectiveText)}</div>
+                <div class="sortie-badges">
+                    ${badgeList || `<span class="sortie-badge muted-badge">배지는 첫 정답, 3연속 정답, 무실수 완주 같은 학습 성과로 열립니다.</span>`}
+                </div>
+            </div>
             <div class="quiz-kicker">${escapeHtml(question.kicker)}</div>
             <div class="quiz-question">${escapeHtml(question.prompt)}</div>
             <div class="quiz-context">${escapeHtml(question.context)}</div>
+            <div class="quiz-brief-grid">
+                <article class="quiz-brief-card">
+                    <div class="quiz-brief-label">실전 연결</div>
+                    <div class="quiz-brief-copy">${escapeHtml(practiceValue)}</div>
+                </article>
+                <article class="quiz-brief-card">
+                    <div class="quiz-brief-label">이번 문제 포인트</div>
+                    <div class="quiz-brief-copy">${escapeHtml(missionPoint)}</div>
+                </article>
+            </div>
             <div class="question-choices">
                 ${question.choices
                     .map((choice, index) => {
@@ -788,7 +991,7 @@
                     ${question.answered ? escapeHtml(question.feedback) : `참조: ${escapeHtml(question.reference)}`}
                 </div>
                 <div class="reader-controls">
-                    <button class="small-button" data-quiz-refresh="${escapeHtml(question.mode)}">다음 문제</button>
+                    <button class="small-button" data-quiz-refresh="${escapeHtml(question.mode)}">${escapeHtml(nextActionLabel)}</button>
                     ${
                         question.moduleId
                             ? `<button class="small-button" data-open-module="${escapeHtml(question.moduleId)}">관련 파트 열기</button>`
@@ -801,7 +1004,9 @@
 
     function renderSearchResults() {
         if (!state.searchResults.length) {
-            refs.searchResults.innerHTML = `<div class="empty-state">검색어를 입력하면 목차 토픽과 페이지 본문에서 함께 찾습니다.</div>`;
+            refs.searchResults.innerHTML = state.lastGuideSearchTerm
+                ? `<div class="empty-state"><strong>${escapeHtml(state.lastGuideSearchTerm)}</strong>에 대한 결과가 없습니다. 약어, 원문 표현, 한국어 표현 중 다른 형태로 다시 검색해보세요.</div>`
+                : `<div class="empty-state">검색어를 입력하면 목차 토픽과 영문 원문, 한국어 번역 페이지를 함께 찾습니다.</div>`;
             return;
         }
 
@@ -843,6 +1048,24 @@
         const drillStart = event.target.closest("[data-drill-start]");
         if (drillStart) {
             startDrill(drillStart.dataset.drillStart);
+            return;
+        }
+
+        const readerLanguage = event.target.closest("[data-reader-language]");
+        if (readerLanguage) {
+            const nextLanguage = readerLanguage.dataset.readerLanguage;
+            if (nextLanguage === "ko" && !hasKoTranslation(state.selectedPage)) {
+                return;
+            }
+            state.readerLanguage = nextLanguage;
+            renderModuleDetail();
+            return;
+        }
+
+        const imageTrigger = event.target.closest("[data-open-image-modal]");
+        if (imageTrigger) {
+            const page = Number(imageTrigger.dataset.openImageModal) || state.selectedPage;
+            openImageModal(page);
         }
     }
 
@@ -855,7 +1078,7 @@
 
         const refresh = event.target.closest("[data-quiz-refresh]");
         if (refresh) {
-            startDrill(refresh.dataset.quizRefresh);
+            advanceQuiz(refresh.dataset.quizRefresh);
             return;
         }
 
@@ -896,15 +1119,89 @@
         renderModuleDetail();
     }
 
-    function startDrill(mode) {
-        if (mode === "hotas") {
-            state.quiz = buildHotasQuestion();
-        } else if (mode === "topic") {
-            state.quiz = buildTopicQuestion();
-        } else {
-            state.quiz = buildSequenceQuestion();
+    function handleImageModalClick(event) {
+        if (event.target.closest("[data-close-image-modal]")) {
+            closeImageModal();
+        }
+    }
+
+    function openImageModal(page) {
+        const module = getSelectedModule();
+        const imageUrl = pageImageHdUrl(page);
+        state.modalImageUrl = imageUrl;
+        state.modalImageTitle = `${module ? module.meta.koTitle : "Guide"} / ${formatPageRange(page, page)}`;
+        state.modalImagePage = page;
+        state.modalTriedStandardImage = false;
+        refs.imageModalTitle.textContent = state.modalImageTitle;
+        refs.imageModalFallback.style.display = "none";
+        refs.imageModalImage.style.display = "block";
+        refs.imageModalImage.src = imageUrl;
+        refs.imageModalImage.alt = state.modalImageTitle;
+        refs.imageModal.classList.add("open");
+        refs.imageModal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeImageModal() {
+        refs.imageModal.classList.remove("open");
+        refs.imageModal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+    }
+
+    function handleModalImageError() {
+        if (!state.modalTriedStandardImage) {
+            state.modalTriedStandardImage = true;
+            refs.imageModalImage.src = pageImageUrl(state.modalImagePage);
+            return;
+        }
+
+        refs.imageModalImage.style.display = "none";
+        refs.imageModalFallback.style.display = "block";
+    }
+
+    function handleModalImageLoad() {
+        refs.imageModalFallback.style.display = "none";
+        refs.imageModalImage.style.display = "block";
+    }
+
+    function startDrill(mode, options = {}) {
+        const { countRun = true } = options;
+        const config = DRILL_CONFIGS[mode] || DRILL_CONFIGS.sequence;
+        state.quizSession = createQuizSession(mode, config);
+        state.quiz = buildQuizForMode(mode);
+        if (countRun) {
+            state.progress.modeRuns[mode] = (state.progress.modeRuns[mode] || 0) + 1;
+            saveProgress();
+            renderStats();
         }
         renderQuiz();
+    }
+
+    function advanceQuiz(mode) {
+        const nextMode = mode || (state.quizSession ? state.quizSession.mode : "sequence");
+        if (!state.quizSession || state.quizSession.mode !== nextMode || state.quizSession.status !== "active") {
+            startDrill(nextMode);
+            return;
+        }
+
+        if (!state.quiz || !state.quiz.answered) {
+            startDrill(nextMode);
+            return;
+        }
+
+        state.quizSession.round += 1;
+        state.quiz = buildQuizForMode(nextMode);
+        renderQuiz();
+    }
+
+    function buildQuizForMode(mode) {
+        if (mode === "hotas") {
+            return buildHotasQuestion();
+        }
+        if (mode === "topic") {
+            return buildTopicQuestion();
+        }
+        return buildSequenceQuestion();
     }
 
     function buildSequenceQuestion() {
@@ -926,13 +1223,16 @@
         return {
             mode: "sequence",
             kicker: `${pack.modeLabel} / ${pack.title}`,
-            prompt: "다음 단계로 가장 맞는 절차를 고르세요.",
+            prompt: "지금 흐름에서 다음으로 이어져야 할 체크 절차는 무엇입니까?",
             context: `현재까지 진행:\n${contextSteps}`,
             choices,
             answerIndex,
             moduleId: moduleIdForTitle(pack.moduleTitle),
             reference: pack.moduleTitle,
             feedback: "",
+            trainingValue: pack.trainingGoal,
+            trainingPoint: pack.debrief,
+            explanation: pack.debrief,
         };
     }
 
@@ -940,7 +1240,7 @@
         const raw = sample(HOTAS_QUESTIONS);
         return {
             mode: "hotas",
-            kicker: "HOTAS Reflex",
+            kicker: "HOTAS 반응 훈련 / HOTAS Reflex",
             prompt: raw.prompt,
             context: raw.context,
             choices: raw.choices,
@@ -949,14 +1249,17 @@
             reference: raw.moduleTitle,
             feedback: "",
             explanation: raw.explanation,
+            trainingValue: "실제 전투나 센서 운용에서는 메뉴보다 손이 먼저 움직여야 합니다.",
+            trainingPoint: raw.practicalUse || raw.explanation,
         };
     }
 
     function buildTopicQuestion() {
-        const module = sample(state.modules);
-        const topic = sample(module.topics);
+        const eligibleModules = state.modules.filter((item) => item.partNumber > 0 && item.topics.some((topic) => !topic.synthetic));
+        const module = sample(eligibleModules);
+        const topic = sample(module.topics.filter((item) => !item.synthetic));
         const correct = module;
-        const distractorModules = shuffle(state.modules.filter((item) => item.id !== module.id)).slice(0, 3);
+        const distractorModules = shuffle(eligibleModules.filter((item) => item.id !== module.id)).slice(0, 3);
         const choices = shuffle([correct, ...distractorModules]).map(
             (item) => `${item.meta.koTitle} / ${shortEnglishTitle(item.title)}`
         );
@@ -965,7 +1268,7 @@
 
         return {
             mode: "topic",
-            kicker: "Topic Intercept",
+            kicker: "가이드 구조 훈련 / Guide Intercept",
             prompt: "다음 토픽이 집중적으로 다뤄지는 파트를 고르세요.",
             context: `${topic.title}\n${topicPath}`,
             choices,
@@ -973,7 +1276,112 @@
             moduleId: module.id,
             reference: formatPageRange(topic.pageStart, topic.pageEnd),
             feedback: "",
+            trainingValue: "실전 중 막히면 해당 파트를 빠르게 다시 열 수 있어야 학습 효율이 크게 올라갑니다.",
+            trainingPoint: `${module.meta.koTitle} 파트는 ${module.meta.summary}`,
+            explanation: `${module.meta.koTitle} 파트에서 이 토픽을 집중적으로 다룹니다.`,
         };
+    }
+
+    function createQuizSession(mode, config) {
+        return {
+            mode,
+            label: config.label,
+            totalRounds: config.totalRounds,
+            round: 1,
+            maxLives: config.lives,
+            livesLeft: config.lives,
+            correct: 0,
+            wrong: 0,
+            streak: 0,
+            bestStreak: 0,
+            score: 0,
+            status: "active",
+        };
+    }
+
+    function finalizeQuizSession(session) {
+        if (session.status !== "active") {
+            return;
+        }
+        const completedRounds = session.correct + session.wrong;
+        if (session.livesLeft <= 0) {
+            session.status = "failed";
+            return;
+        }
+        if (completedRounds >= session.totalRounds) {
+            session.status = "success";
+        }
+    }
+
+    function quizSessionProgressPercent(session) {
+        const completedRounds = session.correct + session.wrong;
+        return Math.round((completedRounds / session.totalRounds) * 100);
+    }
+
+    function quizSessionAccuracy(session) {
+        const completedRounds = session.correct + session.wrong;
+        return completedRounds ? Math.round((session.correct / completedRounds) * 100) : 0;
+    }
+
+    function quizSessionGrade(session) {
+        if (session.status === "failed") {
+            return "재도전";
+        }
+        if (session.wrong === 0 && session.correct >= session.totalRounds) {
+            return "완숙";
+        }
+        const accuracy = quizSessionAccuracy(session);
+        if (accuracy >= 90) {
+            return "실전 준비";
+        }
+        if (accuracy >= 75) {
+            return "안정권";
+        }
+        return "입문";
+    }
+
+    function quizSessionStatusLabel(session) {
+        if (session.status === "success") {
+            return "훈련 완료";
+        }
+        if (session.status === "failed") {
+            return "훈련 실패";
+        }
+        return "훈련 진행 중";
+    }
+
+    function unlockBadge(badgeId) {
+        if (!BADGE_LIBRARY[badgeId]) {
+            return false;
+        }
+        if (state.progress.badges.includes(badgeId)) {
+            return false;
+        }
+        state.progress.badges.push(badgeId);
+        return true;
+    }
+
+    function renderUnlockedBadges() {
+        return state.progress.badges
+            .slice(-4)
+            .map((badgeId) => {
+                const badge = BADGE_LIBRARY[badgeId];
+                if (!badge) {
+                    return "";
+                }
+                return `<span class="sortie-badge" title="${escapeHtml(badge.desc)}">${escapeHtml(badge.label)}</span>`;
+            })
+            .join("");
+    }
+
+    function currentPilotRank() {
+        let current = PILOT_RANKS[0];
+        for (const rank of PILOT_RANKS) {
+            if ((state.progress.xp || 0) >= rank.xp) {
+                current = rank;
+            }
+        }
+        return current;
     }
 
     function answerQuiz(selectedIndex) {
@@ -985,11 +1393,12 @@
         state.quiz.answered = true;
         state.quiz.selectedIndex = selectedIndex;
         const moduleId = state.quiz.moduleId;
+        const session = state.quizSession;
 
         state.progress.answered += 1;
         if (correct) {
             state.progress.correct += 1;
-            state.progress.xp += 15;
+            state.progress.xp += 15 + ((session ? session.streak : 0) * 3);
         } else {
             state.progress.xp += 4;
         }
@@ -1003,18 +1412,73 @@
             state.progress.modules[moduleId] = bucket;
         }
 
+        if (session) {
+            if (correct) {
+                session.correct += 1;
+                session.streak += 1;
+                session.bestStreak = Math.max(session.bestStreak, session.streak);
+                session.score += 100 + (session.streak - 1) * 25;
+                unlockBadge("first_sortie");
+            } else {
+                session.wrong += 1;
+                session.streak = 0;
+                session.livesLeft = Math.max(0, session.livesLeft - 1);
+                session.score = Math.max(0, session.score - 35);
+            }
+
+            state.progress.bestStreak = Math.max(state.progress.bestStreak || 0, session.bestStreak);
+            if (session.bestStreak >= 3) {
+                unlockBadge("hot_streak");
+            }
+        }
+
         if (state.quiz.mode === "hotas") {
             state.quiz.feedback = correct
                 ? `정답. ${state.quiz.explanation}`
                 : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
         } else if (state.quiz.mode === "sequence") {
             state.quiz.feedback = correct
-                ? "정답. 절차는 결국 큰 흐름을 머릿속에 유지하는 것이 핵심입니다."
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다.`;
+                ? `정답. ${state.quiz.explanation}`
+                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
         } else {
             state.quiz.feedback = correct
-                ? "정답. 전체 가이드 구조를 외우기 시작하면 필요한 내용을 훨씬 빨리 찾게 됩니다."
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다.`;
+                ? `정답. ${state.quiz.explanation}`
+                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
+        }
+
+        if (session) {
+            finalizeQuizSession(session);
+            if (session.status === "success") {
+                const successBonus = 35 + session.livesLeft * 8 + session.bestStreak * 5;
+                state.progress.xp += successBonus;
+                state.progress.missionsWon += 1;
+                state.progress.modeWins[session.mode] = (state.progress.modeWins[session.mode] || 0) + 1;
+
+                if (session.wrong === 0) {
+                    unlockBadge("clean_sortie");
+                }
+                if (session.mode === "hotas") {
+                    unlockBadge("systems_brain");
+                } else if (session.mode === "topic") {
+                    unlockBadge("route_reader");
+                } else if (session.mode === "sequence") {
+                    unlockBadge("checklist_flow");
+                }
+                if (
+                    state.progress.modeWins.sequence > 0 &&
+                    state.progress.modeWins.hotas > 0 &&
+                    state.progress.modeWins.topic > 0
+                ) {
+                    unlockBadge("triple_track");
+                }
+                if (state.progress.missionsWon >= 5) {
+                    unlockBadge("academy_loop");
+                }
+
+                state.quiz.feedback = `${state.quiz.feedback} 훈련 완료. 평가 ${quizSessionGrade(session)}, 보너스 ${successBonus} XP를 획득했습니다.`;
+            } else if (session.status === "failed") {
+                state.quiz.feedback = `${state.quiz.feedback} 훈련 실패. 실수 여유를 모두 소모했습니다.`;
+            }
         }
 
         saveProgress();
@@ -1024,60 +1488,183 @@
         renderQuiz();
     }
 
-    function runGuideSearch() {
+    function runGuideSearch(announce = false) {
+        window.clearTimeout(guideSearchTimer);
         const term = refs.guideSearchInput.value.trim();
         if (term.length < 2) {
+            state.lastGuideSearchTerm = "";
             state.searchResults = [];
             renderSearchResults();
+            updateSearchStatus("");
             return;
         }
+        state.lastGuideSearchTerm = term;
 
-        const lower = term.toLowerCase();
         const results = [];
+        const seen = new Set();
+
+        const pushResult = (result) => {
+            const key = `${result.title}|${result.meta}|${result.page || ""}|${result.moduleId || ""}`;
+            if (seen.has(key)) {
+                return false;
+            }
+            seen.add(key);
+            results.push(result);
+            return results.length >= 12;
+        };
+
+        for (const entry of state.glossary) {
+            const haystack = `${entry.term} ${entry.ko} ${entry.desc} ${entry.part}`;
+            if (!matchesSearch(haystack, term)) {
+                continue;
+            }
+            const moduleId = moduleIdForTitle(entry.part);
+            const module = moduleId ? state.modules.find((item) => item.id === moduleId) : null;
+            if (
+                pushResult({
+                    title: `${entry.term} / ${entry.ko}`,
+                    meta: `용어 사전 / ${entry.part}`,
+                    snippet: entry.desc,
+                    moduleId,
+                    page: module ? module.pageStart : null,
+                })
+            ) {
+                state.searchResults = results;
+                renderSearchResults();
+                updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
+                return;
+            }
+        }
 
         for (const module of state.modules) {
+            const academyHaystack = `${module.title} ${module.meta.koTitle} ${module.meta.mission} ${module.meta.summary} ${(module.meta.terms || []).join(" ")} ${(module.meta.bullets || []).join(" ")}`;
+            if (
+                matchesSearch(academyHaystack, term) &&
+                pushResult({
+                    title: `${module.meta.koTitle} / ${shortEnglishTitle(module.title)}`,
+                    meta: `아카데미 파트 / ${module.title} / ${formatPageRange(module.pageStart, module.pageEnd)}`,
+                    snippet: module.meta.summary,
+                    moduleId: module.id,
+                    page: module.pageStart,
+                })
+            ) {
+                state.searchResults = results;
+                renderSearchResults();
+                updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
+                return;
+            }
+
             for (const topic of module.topics) {
-                const haystack = `${topic.title} ${topic.path.join(" ")}`.toLowerCase();
-                if (!haystack.includes(lower)) {
+                const haystack = `${topic.title} ${topic.path.join(" ")} ${module.title} ${module.meta.koTitle} ${module.meta.mission} ${module.meta.summary} ${(module.meta.terms || []).join(" ")} ${(module.meta.bullets || []).join(" ")}`;
+                if (!matchesSearch(haystack, term)) {
                     continue;
                 }
-                results.push({
-                    title: `${topic.title}`,
-                    meta: `${module.meta.koTitle} / ${module.title} / ${formatPageRange(topic.pageStart, topic.pageEnd)}`,
-                    snippet: formatTopicPath(topic.path, module.title),
-                    moduleId: module.id,
-                    page: topic.pageStart || module.pageStart,
-                });
-                if (results.length >= 8) {
+                if (
+                    pushResult({
+                        title: `${topic.title}`,
+                        meta: `${module.meta.koTitle} / ${module.title} / ${formatPageRange(topic.pageStart, topic.pageEnd)}`,
+                        snippet: formatTopicPath(topic.path, module.title),
+                        moduleId: module.id,
+                        page: topic.pageStart || module.pageStart,
+                    })
+                ) {
                     state.searchResults = results;
                     renderSearchResults();
+                    updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
                     return;
                 }
             }
         }
 
         for (let index = 0; index < pageTexts.length; index += 1) {
-            const text = pageTexts[index] || "";
-            const lowerText = text.toLowerCase();
-            if (!lowerText.includes(lower)) {
+            const englishText = pageTexts[index] || "";
+            const koreanText = pageTextsKo[index] || "";
+            let matchedText = "";
+            let sourceLabel = "";
+
+            if (matchesSearch(englishText, term)) {
+                matchedText = englishText;
+                sourceLabel = "영문 추출본";
+            } else if (matchesSearch(koreanText, term)) {
+                matchedText = koreanText;
+                sourceLabel = "한국어 기계번역";
+            }
+
+            if (!matchedText) {
                 continue;
             }
             const page = index + 1;
             const module = moduleForPage(page);
-            results.push({
-                title: `Page ${page}`,
-                meta: `${module ? module.meta.koTitle : "Unknown"} / ${module ? module.title : "Guide"} / ${formatPageRange(page, page)}`,
-                snippet: makeSnippet(text, term),
-                moduleId: module ? module.id : null,
-                page,
-            });
-            if (results.length >= 12) {
+            if (
+                pushResult({
+                    title: `Page ${page}`,
+                    meta: `${module ? module.meta.koTitle : "Unknown"} / ${module ? module.title : "Guide"} / ${formatPageRange(page, page)} / ${sourceLabel}`,
+                    snippet: makeSnippet(matchedText, term),
+                    moduleId: module ? module.id : null,
+                    page,
+                })
+            ) {
                 break;
             }
         }
 
         state.searchResults = results;
         renderSearchResults();
+        updateSearchStatus(announce ? buildSearchAnnouncement(term, results.length) : "");
+    }
+
+    function scheduleGuideSearch() {
+        if (isGuideSearchComposing) {
+            return;
+        }
+        window.clearTimeout(guideSearchTimer);
+        const term = refs.guideSearchInput.value.trim();
+        if (term.length < 2) {
+            state.lastGuideSearchTerm = "";
+            state.searchResults = [];
+            renderSearchResults();
+            updateSearchStatus("");
+            return;
+        }
+        state.lastGuideSearchTerm = term;
+        guideSearchTimer = window.setTimeout(() => runGuideSearch(false), 160);
+    }
+
+    function handleWorkspaceToolbarClick(event) {
+        const modeButton = event.target.closest("[data-layout-mode]");
+        if (!modeButton) {
+            return;
+        }
+        setLayoutMode(modeButton.dataset.layoutMode);
+    }
+
+    function setLayoutMode(nextMode) {
+        if (!["default", "compact", "focus"].includes(nextMode)) {
+            return;
+        }
+        state.layoutMode = nextMode;
+        saveLayout();
+        applyLayout();
+    }
+
+    function applyLayout() {
+        if (!refs.workspace) {
+            return;
+        }
+        const isFocus = state.layoutMode === "focus";
+        const isCompact = state.layoutMode === "compact";
+
+        refs.workspace.classList.toggle("compact-mode", isCompact);
+        refs.workspace.classList.toggle("focus-mode", isFocus);
+        if (refs.workspaceAside) {
+            refs.workspaceAside.inert = isFocus;
+            refs.workspaceAside.setAttribute("aria-hidden", isFocus ? "true" : "false");
+        }
+        (refs.layoutButtons || []).forEach((button) => {
+            const isActive = button.dataset.layoutMode === state.layoutMode;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
     }
 
     function openModule(moduleId, page) {
@@ -1161,20 +1748,102 @@
         return module ? module.id : null;
     }
 
+    function defaultProgress() {
+        return {
+            xp: 0,
+            answered: 0,
+            correct: 0,
+            modules: {},
+            missionsWon: 0,
+            bestStreak: 0,
+            badges: [],
+            modeRuns: { sequence: 0, hotas: 0, topic: 0 },
+            modeWins: { sequence: 0, hotas: 0, topic: 0 },
+        };
+    }
+
+    function normalizeModeCounter(value) {
+        return {
+            sequence: Number(value?.sequence) || 0,
+            hotas: Number(value?.hotas) || 0,
+            topic: Number(value?.topic) || 0,
+        };
+    }
+
+    function normalizeProgress(value) {
+        const base = defaultProgress();
+        const source = value && typeof value === "object" ? value : {};
+        return {
+            ...base,
+            xp: Number(source.xp) || 0,
+            answered: Number(source.answered) || 0,
+            correct: Number(source.correct) || 0,
+            modules: source.modules && typeof source.modules === "object" ? source.modules : {},
+            missionsWon: Number(source.missionsWon) || 0,
+            bestStreak: Number(source.bestStreak) || 0,
+            badges: Array.isArray(source.badges) ? source.badges.filter((item) => BADGE_LIBRARY[item]) : [],
+            modeRuns: normalizeModeCounter(source.modeRuns),
+            modeWins: normalizeModeCounter(source.modeWins),
+        };
+    }
+
     function loadProgress() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) {
-                return { xp: 0, answered: 0, correct: 0, modules: {} };
+                return defaultProgress();
             }
-            return JSON.parse(raw);
+            return normalizeProgress(JSON.parse(raw));
         } catch (error) {
-            return { xp: 0, answered: 0, correct: 0, modules: {} };
+            return defaultProgress();
+        }
+    }
+
+    function loadLayout() {
+        try {
+            const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
+            if (!raw) {
+                return { sidebarMode: "default" };
+            }
+            const parsed = JSON.parse(raw);
+            if (parsed && ["default", "compact", "focus"].includes(parsed.sidebarMode)) {
+                return { sidebarMode: parsed.sidebarMode };
+            }
+            if (parsed && Object.prototype.hasOwnProperty.call(parsed, "sidebarCollapsed")) {
+                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default" };
+            }
+            return { sidebarMode: "default" };
+        } catch (error) {
+            return { sidebarMode: "default" };
         }
     }
 
     function saveProgress() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
+    }
+
+    function saveLayout() {
+        localStorage.setItem(
+            LAYOUT_STORAGE_KEY,
+            JSON.stringify({ sidebarMode: state.layoutMode })
+        );
+    }
+
+    function updateSearchStatus(message) {
+        if (!refs.searchResultsStatus) {
+            return;
+        }
+        refs.searchResultsStatus.textContent = message;
+    }
+
+    function buildSearchAnnouncement(term, resultCount) {
+        if (!term) {
+            return "";
+        }
+        if (!resultCount) {
+            return `${term} 검색 결과가 없습니다.`;
+        }
+        return `${term} 검색 결과 ${resultCount}건입니다.`;
     }
 
     function shortEnglishTitle(title) {
@@ -1203,15 +1872,109 @@
         return `generated/dcs_f16_guide/page_images/page-${String(page).padStart(4, "0")}.jpg`;
     }
 
+    function pageImageHdUrl(page) {
+        return `generated/dcs_f16_guide/page_images_hd/page-${String(page).padStart(4, "0")}.jpg`;
+    }
+
+    function normalizeSearchText(value) {
+        return String(value || "")
+            .toLowerCase()
+            .normalize("NFKC")
+            .replace(/[^a-z0-9가-힣]+/g, " ")
+            .trim()
+            .replace(/\s+/g, " ");
+    }
+
+    function compactSearchText(value) {
+        return normalizeSearchText(value).replace(/\s+/g, "");
+    }
+
+    function matchesSearch(haystack, needle) {
+        const rawHaystack = String(haystack || "").toLowerCase();
+        const rawNeedle = String(needle || "").toLowerCase();
+        if (!rawNeedle) {
+            return false;
+        }
+        if (rawHaystack.includes(rawNeedle)) {
+            return true;
+        }
+
+        const normalizedNeedle = normalizeSearchText(needle);
+        if (!normalizedNeedle) {
+            return false;
+        }
+
+        const normalizedHaystack = normalizeSearchText(haystack);
+        if (normalizedHaystack.includes(normalizedNeedle)) {
+            return true;
+        }
+
+        const compactNeedle = normalizedNeedle.replace(/\s+/g, "");
+        return compactNeedle.length >= 3 && compactSearchText(haystack).includes(compactNeedle);
+    }
+
+    function currentReaderText(page) {
+        if (state.readerLanguage === "ko" && hasKoTranslation(page)) {
+            return pageTextsKo[page - 1] || "로컬 한국어 번역 텍스트가 없습니다.";
+        }
+        return pageTexts[page - 1] || "로컬 페이지 텍스트가 없습니다.";
+    }
+
+    function hasKoTranslation(page) {
+        return Boolean(pageTextsKo[page - 1]);
+    }
+
     function makeSnippet(text, term) {
-        const lower = text.toLowerCase();
-        const index = lower.indexOf(term.toLowerCase());
+        const index = findSnippetIndex(text, term);
         if (index === -1) {
             return text.slice(0, 180);
         }
         const start = Math.max(0, index - 70);
         const end = Math.min(text.length, index + term.length + 110);
         return text.slice(start, end).replace(/\s+/g, " ").trim();
+    }
+
+    function findSnippetIndex(text, term) {
+        const rawText = String(text || "");
+        const rawNeedle = String(term || "");
+        const rawIndex = rawText.toLowerCase().indexOf(rawNeedle.toLowerCase());
+        if (rawIndex !== -1) {
+            return rawIndex;
+        }
+
+        const compactNeedle = compactSearchText(term);
+        if (!compactNeedle) {
+            return -1;
+        }
+
+        const compactSource = buildCompactSearchSource(rawText);
+        const compactIndex = compactSource.compact.indexOf(compactNeedle);
+        if (compactIndex === -1) {
+            return -1;
+        }
+        return compactSource.indexMap[compactIndex] ?? -1;
+    }
+
+    function buildCompactSearchSource(value) {
+        const source = String(value || "");
+        const compact = [];
+        const indexMap = [];
+
+        for (let index = 0; index < source.length; index += 1) {
+            const normalized = source[index].normalize("NFKC").toLowerCase();
+            for (const character of normalized) {
+                if (!/[a-z0-9가-힣]/.test(character)) {
+                    continue;
+                }
+                compact.push(character);
+                indexMap.push(index);
+            }
+        }
+
+        return {
+            compact: compact.join(""),
+            indexMap,
+        };
     }
 
     function clamp(value, min, max) {
