@@ -19,11 +19,14 @@
 - `generated/dcs_f16_guide/`
   - 추출 결과물
   - `guide_bundle.js`: 브라우저 런타임 데이터
+  - `guide_bundle_ko.js`: 한국어 기계번역 런타임 데이터
   - `guide_manifest.json`: 전체 목차와 메타데이터
   - `outline.md`: 사람이 읽기 쉬운 목차
   - `full_text.md`: 전체 페이지 텍스트
   - `pages.json`: 전체 페이지 텍스트 JSON
   - `page_images/`: 로컬에서 생성하는 페이지 이미지
+  - `page_images_hd/`: 확대 모달용 로컬 HD 페이지 이미지
+  - `page_translations_ko.json`: 한국어 기계번역 페이지 데이터
   - `sections/*.md`: 파트별 분할본
 
 ## 실행
@@ -55,6 +58,12 @@ python3 scripts/extract_dcs_f16_guide.py \
   --render-page-images
 ```
 
+한국어 기계번역 번들도 만들려면 아래 스크립트를 추가로 실행합니다.
+
+```bash
+python3 scripts/translate_dcs_f16_guide_ko.py
+```
+
 ## 학습 방식
 
 - 한국어 설명 중심
@@ -65,9 +74,12 @@ python3 scripts/extract_dcs_f16_guide.py \
 - Topic Intercept: 전체 가이드 목차 기반 파트 매핑 퀴즈
 - 전체 가이드 검색과 페이지 리더
 - 페이지 이미지와 텍스트를 나란히 보는 가이드 리더
+- 우측 텍스트 패널의 한국어 기계번역 / 영문 추출본 토글
+- 약어, 용어사전, 파트 브리핑, 영문 원문, 한국어 번역을 함께 타는 통합 검색
 
 ## 참고
 
 - 진행률은 브라우저 `localStorage`에 저장됩니다.
 - PDF가 업데이트되면 추출 스크립트를 다시 실행하면 됩니다.
-- `generated/dcs_f16_guide/page_images/`는 PDF에서 로컬로 다시 생성할 수 있으므로 기본적으로 Git 추적 대상에서 제외합니다.
+- `generated/dcs_f16_guide/page_images/`와 `generated/dcs_f16_guide/page_images_hd/`는 PDF에서 로컬로 다시 생성할 수 있으므로 기본적으로 Git 추적 대상에서 제외합니다.
+- 한국어 텍스트는 기계번역이므로 HOTAS, INS, IFF 같은 핵심 영어 용어는 원문과 함께 보는 것을 권장합니다.

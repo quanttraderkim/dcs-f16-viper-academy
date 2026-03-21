@@ -698,6 +698,46 @@
             flex-wrap: wrap;
         }
 
+        .reader-language {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 237, 192, 0.12);
+        }
+
+        .reader-language-label {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding-left: 8px;
+        }
+
+        .reader-language-button {
+            border: 0;
+            cursor: pointer;
+            border-radius: 999px;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            background: transparent;
+            color: var(--text-body);
+        }
+
+        .reader-language-button:disabled {
+            opacity: 0.38;
+            cursor: not-allowed;
+        }
+
+        .reader-language-button.active {
+            background: rgba(255, 207, 107, 0.16);
+            color: var(--text-strong);
+        }
+
         .reader-meta {
             display: flex;
             gap: 8px;
@@ -782,6 +822,24 @@
         .panel.light .reader-body {
             color: var(--light-text-strong);
             border-color: rgba(83, 78, 59, 0.12);
+        }
+
+        .panel.light .reader-language {
+            background: rgba(255, 250, 239, 0.84);
+            border-color: rgba(83, 78, 59, 0.14);
+        }
+
+        .panel.light .reader-language-label {
+            color: var(--light-text-muted);
+        }
+
+        .panel.light .reader-language-button {
+            color: var(--light-text-body);
+        }
+
+        .panel.light .reader-language-button.active {
+            background: rgba(255, 207, 107, 0.18);
+            color: var(--light-text-strong);
         }
 
         .panel.light .reader-visual {
@@ -892,6 +950,14 @@
             height: auto;
             display: block;
             border-radius: 14px;
+        }
+
+        .image-modal-fallback {
+            display: none;
+            color: rgba(244, 238, 223, 0.82);
+            line-height: 1.65;
+            font-size: 15px;
+            padding: 20px;
         }
 
         @media (max-width: 1180px) {
@@ -1053,11 +1119,11 @@
                     <div class="panel-kicker">Guide Search</div>
                     <h2 class="section-title">가이드 전체 검색</h2>
                     <p class="muted">
-                        영어 원문 토픽명이나 페이지 텍스트를 직접 검색할 수 있습니다. 결과를 누르면 해당 파트와 페이지로
+                        영어 약어와 원문 토픽명뿐 아니라 한국어 번역 페이지 텍스트도 함께 검색할 수 있습니다. 결과를 누르면 해당 파트와 페이지로
                         바로 이동합니다.
                     </p>
                     <div class="guide-search">
-                        <input class="text-input" id="guideSearchInput" type="text" placeholder="예: ILS, TWS, JFS, air refueling">
+                        <input class="text-input" id="guideSearchInput" type="text" placeholder="예: VHF, Probe Heat, ILS, 공중급유, 착륙">
                         <button class="action-button" id="guideSearchButton">검색</button>
                     </div>
                     <div class="search-results" id="searchResults"></div>
@@ -1075,11 +1141,16 @@
             </div>
             <div class="image-modal-body">
                 <img class="image-modal-image" id="imageModalImage" alt="Expanded guide page">
+                <div class="image-modal-fallback" id="imageModalFallback">
+                    고해상도 페이지 이미지가 없습니다. 일반 페이지 이미지로도 불러오지 못한 상태입니다.
+                    <code>--render-page-images</code> 옵션으로 다시 추출하면 페이지 그림과 설명을 함께 볼 수 있습니다.
+                </div>
             </div>
         </div>
     </div>
 
     <script src="generated/dcs_f16_guide/guide_bundle.js"></script>
+    <script src="generated/dcs_f16_guide/guide_bundle_ko.js"></script>
     <script src="f16_viper_academy.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
         tree: [],
     };
     const pageTexts = window.__DCS_F16_GUIDE_PAGES__ || [];
+    const pageTextsKo = window.__DCS_F16_GUIDE_PAGES_KO__ || [];
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
@@ -398,8 +399,11 @@
         glossary: [...GLOSSARY],
         selectedModuleId: null,
         selectedPage: 1,
+        readerLanguage: pageTextsKo.length ? "ko" : "en",
         modalImageUrl: "",
         modalImageTitle: "",
+        modalImagePage: 1,
+        modalTriedStandardImage: false,
         progress: loadProgress(),
         quiz: null,
         searchResults: [],
@@ -413,6 +417,9 @@
         state.modules = buildModules();
         state.selectedModuleId = state.modules[0] ? state.modules[0].id : null;
         state.selectedPage = state.modules[0] ? state.modules[0].pageStart : 1;
+        if (!pageTextsKo.length) {
+            state.readerLanguage = "en";
+        }
         bindEvents();
         renderRouteList();
         renderGlossary();
@@ -438,6 +445,7 @@
         refs.imageModal = document.getElementById("imageModal");
         refs.imageModalTitle = document.getElementById("imageModalTitle");
         refs.imageModalImage = document.getElementById("imageModalImage");
+        refs.imageModalFallback = document.getElementById("imageModalFallback");
         refs.imageModalClose = document.getElementById("imageModalClose");
     }
 
@@ -463,6 +471,8 @@
         });
         refs.imageModal.addEventListener("click", handleImageModalClick);
         refs.imageModalClose.addEventListener("click", closeImageModal);
+        refs.imageModalImage.addEventListener("error", handleModalImageError);
+        refs.imageModalImage.addEventListener("load", handleModalImageLoad);
         document.addEventListener("keydown", (event) => {
             if (event.key === "Escape" && refs.imageModal.classList.contains("open")) {
                 closeImageModal();
@@ -667,10 +677,13 @@
         }
 
         state.selectedPage = clamp(state.selectedPage, module.pageStart, module.pageEnd);
-        const pageText = pageTexts[state.selectedPage - 1] || "로컬 페이지 텍스트가 없습니다.";
+        const pageText = currentReaderText(state.selectedPage);
         const moduleScore = getModuleScore(module.id);
         const topSections = module.topics.slice(0, 14);
         const imageUrl = pageImageUrl(state.selectedPage);
+        const translationAvailable = hasKoTranslation(state.selectedPage);
+        const languageBadge =
+            state.readerLanguage === "ko" && translationAvailable ? "한국어 기계번역" : "영문 추출본";
 
         refs.moduleDetail.innerHTML = `
             <div class="detail-headline">
@@ -735,9 +748,18 @@
             <div class="reader-head">
                 <div>
                     <div class="panel-kicker">Guide Reader</div>
-                    <div class="muted">현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd}</div>
+                    <div class="muted">현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd} / ${languageBadge}</div>
                 </div>
                 <div class="reader-controls">
+                    <div class="reader-language">
+                        <span class="reader-language-label">Text</span>
+                        <button class="reader-language-button ${state.readerLanguage === "ko" ? "active" : ""}" data-reader-language="ko" type="button" ${translationAvailable ? "" : "disabled"}>
+                            한국어
+                        </button>
+                        <button class="reader-language-button ${state.readerLanguage === "en" ? "active" : ""}" data-reader-language="en" type="button">
+                            English
+                        </button>
+                    </div>
                     <button class="small-button" data-page-action="first">처음</button>
                     <button class="small-button" data-page-action="prev">이전</button>
                     <button class="small-button" data-page-action="next">다음</button>
@@ -747,6 +769,7 @@
             <div class="reader-meta">
                 <span class="meta-chip">${escapeHtml(module.meta.koTitle)}</span>
                 <span class="meta-chip">${formatPageRange(state.selectedPage, state.selectedPage)}</span>
+                <span class="meta-chip">${escapeHtml(languageBadge)}</span>
             </div>
             <div class="reader-layout">
                 <div class="reader-visual">
@@ -821,7 +844,7 @@
 
     function renderSearchResults() {
         if (!state.searchResults.length) {
-            refs.searchResults.innerHTML = `<div class="empty-state">검색어를 입력하면 목차 토픽과 페이지 본문에서 함께 찾습니다.</div>`;
+            refs.searchResults.innerHTML = `<div class="empty-state">검색어를 입력하면 목차 토픽과 영문 원문, 한국어 번역 페이지를 함께 찾습니다.</div>`;
             return;
         }
 
@@ -863,6 +886,17 @@
         const drillStart = event.target.closest("[data-drill-start]");
         if (drillStart) {
             startDrill(drillStart.dataset.drillStart);
+            return;
+        }
+
+        const readerLanguage = event.target.closest("[data-reader-language]");
+        if (readerLanguage) {
+            const nextLanguage = readerLanguage.dataset.readerLanguage;
+            if (nextLanguage === "ko" && !hasKoTranslation(state.selectedPage)) {
+                return;
+            }
+            state.readerLanguage = nextLanguage;
+            renderModuleDetail();
             return;
         }
 
@@ -931,10 +965,14 @@
 
     function openImageModal(page) {
         const module = getSelectedModule();
-        const imageUrl = pageImageUrl(page);
+        const imageUrl = pageImageHdUrl(page);
         state.modalImageUrl = imageUrl;
         state.modalImageTitle = `${module ? module.meta.koTitle : "Guide"} / ${formatPageRange(page, page)}`;
+        state.modalImagePage = page;
+        state.modalTriedStandardImage = false;
         refs.imageModalTitle.textContent = state.modalImageTitle;
+        refs.imageModalFallback.style.display = "none";
+        refs.imageModalImage.style.display = "block";
         refs.imageModalImage.src = imageUrl;
         refs.imageModalImage.alt = state.modalImageTitle;
         refs.imageModal.classList.add("open");
@@ -946,6 +984,22 @@
         refs.imageModal.classList.remove("open");
         refs.imageModal.setAttribute("aria-hidden", "true");
         document.body.style.overflow = "";
+    }
+
+    function handleModalImageError() {
+        if (!state.modalTriedStandardImage) {
+            state.modalTriedStandardImage = true;
+            refs.imageModalImage.src = pageImageUrl(state.modalImagePage);
+            return;
+        }
+
+        refs.imageModalImage.style.display = "none";
+        refs.imageModalFallback.style.display = "block";
+    }
+
+    function handleModalImageLoad() {
+        refs.imageModalFallback.style.display = "none";
+        refs.imageModalImage.style.display = "block";
     }
 
     function startDrill(mode) {
@@ -1084,23 +1138,72 @@
             return;
         }
 
-        const lower = term.toLowerCase();
         const results = [];
+        const seen = new Set();
+
+        const pushResult = (result) => {
+            const key = `${result.title}|${result.meta}|${result.page || ""}|${result.moduleId || ""}`;
+            if (seen.has(key)) {
+                return false;
+            }
+            seen.add(key);
+            results.push(result);
+            return results.length >= 12;
+        };
+
+        for (const entry of state.glossary) {
+            const haystack = `${entry.term} ${entry.ko} ${entry.desc} ${entry.part}`;
+            if (!matchesSearch(haystack, term)) {
+                continue;
+            }
+            const moduleId = moduleIdForTitle(entry.part);
+            const module = moduleId ? state.modules.find((item) => item.id === moduleId) : null;
+            if (
+                pushResult({
+                    title: `${entry.term} / ${entry.ko}`,
+                    meta: `용어 사전 / ${entry.part}`,
+                    snippet: entry.desc,
+                    moduleId,
+                    page: module ? module.pageStart : null,
+                })
+            ) {
+                state.searchResults = results;
+                renderSearchResults();
+                return;
+            }
+        }
 
         for (const module of state.modules) {
+            const academyHaystack = `${module.title} ${module.meta.koTitle} ${module.meta.mission} ${module.meta.summary} ${(module.meta.terms || []).join(" ")} ${(module.meta.bullets || []).join(" ")}`;
+            if (
+                matchesSearch(academyHaystack, term) &&
+                pushResult({
+                    title: `${module.meta.koTitle} / ${shortEnglishTitle(module.title)}`,
+                    meta: `아카데미 파트 / ${module.title} / ${formatPageRange(module.pageStart, module.pageEnd)}`,
+                    snippet: module.meta.summary,
+                    moduleId: module.id,
+                    page: module.pageStart,
+                })
+            ) {
+                state.searchResults = results;
+                renderSearchResults();
+                return;
+            }
+
             for (const topic of module.topics) {
-                const haystack = `${topic.title} ${topic.path.join(" ")}`.toLowerCase();
-                if (!haystack.includes(lower)) {
+                const haystack = `${topic.title} ${topic.path.join(" ")} ${module.title} ${module.meta.koTitle} ${module.meta.mission} ${module.meta.summary} ${(module.meta.terms || []).join(" ")} ${(module.meta.bullets || []).join(" ")}`;
+                if (!matchesSearch(haystack, term)) {
                     continue;
                 }
-                results.push({
-                    title: `${topic.title}`,
-                    meta: `${module.meta.koTitle} / ${module.title} / ${formatPageRange(topic.pageStart, topic.pageEnd)}`,
-                    snippet: formatTopicPath(topic.path, module.title),
-                    moduleId: module.id,
-                    page: topic.pageStart || module.pageStart,
-                });
-                if (results.length >= 8) {
+                if (
+                    pushResult({
+                        title: `${topic.title}`,
+                        meta: `${module.meta.koTitle} / ${module.title} / ${formatPageRange(topic.pageStart, topic.pageEnd)}`,
+                        snippet: formatTopicPath(topic.path, module.title),
+                        moduleId: module.id,
+                        page: topic.pageStart || module.pageStart,
+                    })
+                ) {
                     state.searchResults = results;
                     renderSearchResults();
                     return;
@@ -1109,21 +1212,33 @@
         }
 
         for (let index = 0; index < pageTexts.length; index += 1) {
-            const text = pageTexts[index] || "";
-            const lowerText = text.toLowerCase();
-            if (!lowerText.includes(lower)) {
+            const englishText = pageTexts[index] || "";
+            const koreanText = pageTextsKo[index] || "";
+            let matchedText = "";
+            let sourceLabel = "";
+
+            if (matchesSearch(englishText, term)) {
+                matchedText = englishText;
+                sourceLabel = "영문 추출본";
+            } else if (matchesSearch(koreanText, term)) {
+                matchedText = koreanText;
+                sourceLabel = "한국어 기계번역";
+            }
+
+            if (!matchedText) {
                 continue;
             }
             const page = index + 1;
             const module = moduleForPage(page);
-            results.push({
-                title: `Page ${page}`,
-                meta: `${module ? module.meta.koTitle : "Unknown"} / ${module ? module.title : "Guide"} / ${formatPageRange(page, page)}`,
-                snippet: makeSnippet(text, term),
-                moduleId: module ? module.id : null,
-                page,
-            });
-            if (results.length >= 12) {
+            if (
+                pushResult({
+                    title: `Page ${page}`,
+                    meta: `${module ? module.meta.koTitle : "Unknown"} / ${module ? module.title : "Guide"} / ${formatPageRange(page, page)} / ${sourceLabel}`,
+                    snippet: makeSnippet(matchedText, term),
+                    moduleId: module ? module.id : null,
+                    page,
+                })
+            ) {
                 break;
             }
         }
@@ -1253,6 +1368,58 @@
 
     function pageImageUrl(page) {
         return `generated/dcs_f16_guide/page_images/page-${String(page).padStart(4, "0")}.jpg`;
+    }
+
+    function pageImageHdUrl(page) {
+        return `generated/dcs_f16_guide/page_images_hd/page-${String(page).padStart(4, "0")}.jpg`;
+    }
+
+    function normalizeSearchText(value) {
+        return String(value || "")
+            .toLowerCase()
+            .normalize("NFKC")
+            .replace(/[^a-z0-9가-힣]+/g, " ")
+            .trim()
+            .replace(/\s+/g, " ");
+    }
+
+    function compactSearchText(value) {
+        return normalizeSearchText(value).replace(/\s+/g, "");
+    }
+
+    function matchesSearch(haystack, needle) {
+        const rawHaystack = String(haystack || "").toLowerCase();
+        const rawNeedle = String(needle || "").toLowerCase();
+        if (!rawNeedle) {
+            return false;
+        }
+        if (rawHaystack.includes(rawNeedle)) {
+            return true;
+        }
+
+        const normalizedNeedle = normalizeSearchText(needle);
+        if (!normalizedNeedle) {
+            return false;
+        }
+
+        const normalizedHaystack = normalizeSearchText(haystack);
+        if (normalizedHaystack.includes(normalizedNeedle)) {
+            return true;
+        }
+
+        const compactNeedle = normalizedNeedle.replace(/\s+/g, "");
+        return compactNeedle.length >= 3 && compactSearchText(haystack).includes(compactNeedle);
+    }
+
+    function currentReaderText(page) {
+        if (state.readerLanguage === "ko" && hasKoTranslation(page)) {
+            return pageTextsKo[page - 1] || "로컬 한국어 번역 텍스트가 없습니다.";
+        }
+        return pageTexts[page - 1] || "로컬 페이지 텍스트가 없습니다.";
+    }
+
+    function hasKoTranslation(page) {
+        return Boolean(pageTextsKo[page - 1]);
     }
 
     function makeSnippet(text, term) {
