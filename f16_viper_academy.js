@@ -398,6 +398,8 @@
         glossary: [...GLOSSARY],
         selectedModuleId: null,
         selectedPage: 1,
+        modalImageUrl: "",
+        modalImageTitle: "",
         progress: loadProgress(),
         quiz: null,
         searchResults: [],
@@ -433,6 +435,10 @@
         refs.guideSearchInput = document.getElementById("guideSearchInput");
         refs.guideSearchButton = document.getElementById("guideSearchButton");
         refs.searchResults = document.getElementById("searchResults");
+        refs.imageModal = document.getElementById("imageModal");
+        refs.imageModalTitle = document.getElementById("imageModalTitle");
+        refs.imageModalImage = document.getElementById("imageModalImage");
+        refs.imageModalClose = document.getElementById("imageModalClose");
     }
 
     function bindEvents() {
@@ -453,6 +459,13 @@
         refs.guideSearchInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
                 runGuideSearch();
+            }
+        });
+        refs.imageModal.addEventListener("click", handleImageModalClick);
+        refs.imageModalClose.addEventListener("click", closeImageModal);
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && refs.imageModal.classList.contains("open")) {
+                closeImageModal();
             }
         });
         document.querySelectorAll("[data-drill]").forEach((button) => {
@@ -737,15 +750,22 @@
             </div>
             <div class="reader-layout">
                 <div class="reader-visual">
-                    <img
-                        class="reader-image"
-                        src="${escapeHtml(imageUrl)}"
-                        alt="Guide page ${state.selectedPage}"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                    >
-                    <div class="reader-fallback">
-                        이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
-                        <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
+                    <div class="reader-visual-top">
+                        <div class="reader-visual-title">Page Visual / ${formatPageRange(state.selectedPage, state.selectedPage)}</div>
+                        <button class="action-button" data-open-image-modal="${state.selectedPage}" type="button">크게 보기</button>
+                    </div>
+                    <div class="reader-image-shell">
+                        <img
+                            class="reader-image"
+                            src="${escapeHtml(imageUrl)}"
+                            alt="Guide page ${state.selectedPage}"
+                            data-open-image-modal="${state.selectedPage}"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <div class="reader-fallback">
+                            이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
+                            <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
+                        </div>
                     </div>
                 </div>
                 <article class="reader-body">${escapeHtml(pageText)}</article>
@@ -843,6 +863,13 @@
         const drillStart = event.target.closest("[data-drill-start]");
         if (drillStart) {
             startDrill(drillStart.dataset.drillStart);
+            return;
+        }
+
+        const imageTrigger = event.target.closest("[data-open-image-modal]");
+        if (imageTrigger) {
+            const page = Number(imageTrigger.dataset.openImageModal) || state.selectedPage;
+            openImageModal(page);
         }
     }
 
@@ -894,6 +921,31 @@
             state.selectedPage = module.pageEnd;
         }
         renderModuleDetail();
+    }
+
+    function handleImageModalClick(event) {
+        if (event.target.closest("[data-close-image-modal]")) {
+            closeImageModal();
+        }
+    }
+
+    function openImageModal(page) {
+        const module = getSelectedModule();
+        const imageUrl = pageImageUrl(page);
+        state.modalImageUrl = imageUrl;
+        state.modalImageTitle = `${module ? module.meta.koTitle : "Guide"} / ${formatPageRange(page, page)}`;
+        refs.imageModalTitle.textContent = state.modalImageTitle;
+        refs.imageModalImage.src = imageUrl;
+        refs.imageModalImage.alt = state.modalImageTitle;
+        refs.imageModal.classList.add("open");
+        refs.imageModal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeImageModal() {
+        refs.imageModal.classList.remove("open");
+        refs.imageModal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
     }
 
     function startDrill(mode) {
