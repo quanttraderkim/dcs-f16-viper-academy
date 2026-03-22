@@ -9,28 +9,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-top: #b8a27b;
-            --bg-mid: #7d897d;
-            --bg-bottom: #0e171b;
-            --panel: rgba(15, 22, 25, 0.9);
+            --bg-top: #f0bd77;
+            --bg-mid: #2d5972;
+            --bg-bottom: #07131d;
+            --panel: rgba(9, 20, 31, 0.9);
             --panel-soft: rgba(240, 231, 210, 0.9);
-            --panel-line: rgba(255, 219, 156, 0.2);
-            --text-strong: #f8f2e5;
-            --text-body: rgba(248, 242, 229, 0.78);
+            --panel-line: rgba(255, 195, 112, 0.26);
+            --text-strong: #fbf5ea;
+            --text-body: rgba(251, 245, 234, 0.8);
             --text-dark: #1a2326;
-            --text-muted: rgba(248, 242, 229, 0.48);
-            --light-surface: rgba(239, 231, 212, 0.96);
-            --light-elevated: rgba(255, 249, 239, 0.9);
-            --light-line: rgba(44, 53, 50, 0.16);
-            --light-text-strong: #1d2623;
-            --light-text-body: rgba(29, 38, 35, 0.84);
-            --light-text-muted: rgba(29, 38, 35, 0.56);
-            --accent: #ffb347;
-            --accent-deep: #c86b25;
-            --hud: #90f0b8;
-            --warning: #ff7d65;
-            --info: #9ed8ff;
-            --shadow: 0 32px 90px rgba(6, 10, 12, 0.36);
+            --text-muted: rgba(251, 245, 234, 0.54);
+            --light-surface: rgba(248, 238, 219, 0.97);
+            --light-elevated: rgba(255, 250, 241, 0.94);
+            --light-line: rgba(55, 78, 89, 0.18);
+            --light-text-strong: #162a35;
+            --light-text-body: rgba(22, 42, 53, 0.82);
+            --light-text-muted: rgba(22, 42, 53, 0.58);
+            --accent: #ffb84d;
+            --accent-deep: #e06b2f;
+            --hud: #6af2d0;
+            --warning: #ff7a63;
+            --info: #79d6ff;
+            --shadow: 0 36px 110px rgba(3, 10, 18, 0.42);
             --radius-xl: 30px;
             --radius-lg: 18px;
             --radius-md: 14px;
@@ -51,9 +51,9 @@
             font-family: "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
             color: var(--text-strong);
             background:
-                linear-gradient(150deg, rgba(255, 179, 71, 0.12) 0%, transparent 24%),
-                radial-gradient(circle at 85% 12%, rgba(120, 182, 165, 0.18), transparent 18%),
-                linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 18%),
+                radial-gradient(circle at 18% 0%, rgba(255, 182, 76, 0.32), transparent 24%),
+                radial-gradient(circle at 82% 14%, rgba(81, 176, 247, 0.22), transparent 20%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 16%),
                 linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 38%, var(--bg-bottom) 100%);
             min-height: 100vh;
         }
@@ -63,11 +63,22 @@
             position: fixed;
             inset: 0;
             background:
-                linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
-                linear-gradient(135deg, rgba(255, 179, 71, 0.05), transparent 42%);
+                linear-gradient(rgba(122, 214, 255, 0.032) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(122, 214, 255, 0.032) 1px, transparent 1px),
+                linear-gradient(135deg, rgba(255, 184, 77, 0.08), transparent 42%);
             background-size: 42px 42px, 42px 42px, 100% 100%;
-            opacity: 0.34;
+            opacity: 0.42;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto auto -18% -12%;
+            width: 48vw;
+            height: 48vw;
+            background: radial-gradient(circle, rgba(255, 184, 77, 0.18), transparent 68%);
+            filter: blur(22px);
             pointer-events: none;
         }
 
@@ -82,8 +93,8 @@
             padding: 30px;
             border-radius: 30px 30px 18px 18px;
             background:
-                linear-gradient(135deg, rgba(10, 17, 20, 0.96) 0%, rgba(22, 30, 33, 0.98) 48%, rgba(34, 46, 48, 0.96) 100%);
-            border: 1px solid rgba(255, 219, 156, 0.18);
+                linear-gradient(135deg, rgba(6, 18, 31, 0.97) 0%, rgba(13, 34, 48, 0.98) 52%, rgba(27, 54, 66, 0.96) 100%);
+            border: 1px solid rgba(255, 195, 112, 0.2);
             box-shadow: var(--shadow);
             overflow: hidden;
             position: relative;
@@ -102,9 +113,9 @@
             content: "";
             position: absolute;
             inset: auto -8% -28% auto;
-            width: 320px;
-            height: 320px;
-            background: radial-gradient(circle, rgba(163, 255, 186, 0.18), transparent 68%);
+            width: 360px;
+            height: 360px;
+            background: radial-gradient(circle, rgba(122, 214, 255, 0.2), transparent 70%);
             pointer-events: none;
         }
 
@@ -165,8 +176,8 @@
             gap: 8px;
             padding: 10px 12px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 219, 156, 0.12);
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.09), rgba(122, 214, 255, 0.05));
+            border: 1px solid rgba(255, 195, 112, 0.16);
             color: var(--text-body);
             font-size: 12px;
             letter-spacing: 0.05em;
@@ -180,8 +191,8 @@
         }
 
         .hero-panel {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(255, 237, 192, 0.12);
+            background: linear-gradient(180deg, rgba(255, 184, 77, 0.06), rgba(122, 214, 255, 0.04));
+            border: 1px solid rgba(255, 195, 112, 0.14);
             border-radius: 14px 20px 20px 20px;
             padding: 18px 18px 16px;
             backdrop-filter: blur(18px);
@@ -235,8 +246,8 @@
         .stat-card {
             padding: 16px 18px 18px;
             border-radius: 12px 18px 18px 18px;
-            background: linear-gradient(180deg, rgba(250, 243, 228, 0.12), rgba(255, 255, 255, 0.04));
-            border: 1px solid rgba(255, 237, 192, 0.12);
+            background: linear-gradient(180deg, rgba(255, 184, 77, 0.14), rgba(122, 214, 255, 0.06));
+            border: 1px solid rgba(255, 195, 112, 0.16);
             position: relative;
             overflow: hidden;
         }
@@ -319,9 +330,9 @@
             gap: 14px;
             padding: 14px 18px;
             border-radius: 14px 20px 20px 20px;
-            border: 1px solid rgba(255, 237, 192, 0.12);
-            background: linear-gradient(180deg, rgba(16, 22, 24, 0.84), rgba(12, 17, 18, 0.92));
-            box-shadow: 0 18px 42px rgba(6, 10, 12, 0.18);
+            border: 1px solid rgba(255, 195, 112, 0.16);
+            background: linear-gradient(180deg, rgba(9, 23, 36, 0.9), rgba(8, 16, 28, 0.94));
+            box-shadow: 0 20px 48px rgba(5, 12, 20, 0.22);
         }
 
         .workspace-toolbar-copy {
@@ -377,13 +388,13 @@
             border-radius: 18px 24px 24px 24px;
             padding: 22px;
             background: var(--panel);
-            border: 1px solid rgba(255, 237, 192, 0.12);
+            border: 1px solid rgba(255, 195, 112, 0.14);
             box-shadow: var(--shadow);
             backdrop-filter: blur(18px);
         }
 
         .panel.light {
-            background: linear-gradient(180deg, rgba(243, 235, 214, 0.98), rgba(233, 223, 195, 0.94));
+            background: linear-gradient(180deg, rgba(248, 239, 220, 0.98), rgba(240, 228, 205, 0.95));
             color: var(--light-text-strong);
             border-color: var(--light-line);
         }
@@ -467,8 +478,8 @@
         .module-card {
             border-radius: 12px 18px 18px 18px;
             padding: 16px;
-            background: rgba(247, 241, 225, 0.06);
-            border: 1px solid rgba(255, 237, 192, 0.08);
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.07), rgba(122, 214, 255, 0.04));
+            border: 1px solid rgba(255, 195, 112, 0.1);
             cursor: pointer;
             transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
             position: relative;
@@ -477,8 +488,8 @@
         .module-card:hover,
         .module-card.active {
             transform: translateY(-1px);
-            border-color: rgba(255, 207, 107, 0.34);
-            background: rgba(255, 207, 107, 0.09);
+            border-color: rgba(255, 184, 77, 0.42);
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.14), rgba(122, 214, 255, 0.07));
         }
 
         .module-card::before {
@@ -564,8 +575,8 @@
             width: 100%;
             padding: 14px 16px;
             border-radius: 14px;
-            border: 1px solid rgba(255, 237, 192, 0.12);
-            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 195, 112, 0.16);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-strong);
             outline: none;
         }
@@ -783,8 +794,8 @@
         .drill-card {
             border-radius: 14px 20px 20px 20px;
             padding: 18px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 237, 192, 0.12);
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.09), rgba(122, 214, 255, 0.05));
+            border: 1px solid rgba(255, 195, 112, 0.14);
             display: grid;
             gap: 10px;
             position: relative;
@@ -818,16 +829,16 @@
             margin-top: 18px;
             padding: 20px;
             border-radius: var(--radius-lg);
-            background: linear-gradient(180deg, rgba(15, 23, 24, 0.9), rgba(27, 37, 38, 0.88));
-            border: 1px solid rgba(255, 237, 192, 0.12);
+            background: linear-gradient(180deg, rgba(7, 20, 33, 0.92), rgba(16, 34, 48, 0.9));
+            border: 1px solid rgba(255, 195, 112, 0.14);
         }
 
         .sortie-board {
             margin-bottom: 18px;
             padding: 18px;
             border-radius: 18px;
-            background: linear-gradient(135deg, rgba(255, 207, 107, 0.12), rgba(125, 211, 252, 0.08));
-            border: 1px solid rgba(255, 237, 192, 0.14);
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.16), rgba(121, 214, 255, 0.1));
+            border: 1px solid rgba(255, 195, 112, 0.16);
         }
 
         .sortie-topline {
@@ -1104,7 +1115,7 @@
         .reader-visual {
             padding: 14px;
             background:
-                linear-gradient(180deg, rgba(22, 32, 32, 0.94), rgba(10, 15, 15, 0.9));
+                linear-gradient(180deg, rgba(11, 28, 42, 0.95), rgba(8, 18, 30, 0.92));
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
         }
 
