@@ -930,7 +930,9 @@
         const rank = currentPilotRank();
         const objectiveText = session ? drillConfig.objective : "";
         const practiceValue = question.trainingValue || (drillConfig ? drillConfig.practiceValue : "");
-        const missionPoint = question.trainingPoint || question.reference;
+        const missionPoint = question.answered
+            ? question.trainingPoint || question.reference
+            : question.preAnswerPoint || "정답을 확인하면 이번 문제의 핵심 연결 포인트가 열립니다.";
         const badgeList = renderUnlockedBadges();
         const sessionGrade = session ? quizSessionGrade(session) : "입문";
 
@@ -1025,11 +1027,11 @@
         refs.searchResults.innerHTML = state.searchResults
             .map(
                 (result, index) => `
-                    <article class="search-card" data-search-index="${index}">
+                    <button class="search-card" data-search-index="${index}" type="button">
                         <strong>${escapeHtml(result.title)}</strong>
                         <div class="section-meta">${escapeHtml(result.meta)}</div>
                         <div class="search-snippet" style="margin-top:8px;">${escapeHtml(result.snippet)}</div>
-                    </article>
+                    </button>
                 `
             )
             .join("");
@@ -1302,6 +1304,7 @@
             feedback: "",
             trainingValue: pack.trainingGoal,
             trainingPoint: pack.debrief,
+            preAnswerPoint: "정답을 고르면 다음 체크가 왜 필요한지 바로 연결해서 보여줍니다.",
             explanation: pack.debrief,
         };
     }
@@ -1321,6 +1324,7 @@
             explanation: raw.explanation,
             trainingValue: "실제 전투나 센서 운용에서는 메뉴보다 손이 먼저 움직여야 합니다.",
             trainingPoint: raw.practicalUse || raw.explanation,
+            preAnswerPoint: "정답을 고르면 이 HOTAS 입력이 실전에서 언제 쓰이는지 바로 설명합니다.",
         };
     }
 
@@ -1348,6 +1352,7 @@
             feedback: "",
             trainingValue: "실전 중 막히면 해당 파트를 빠르게 다시 열 수 있어야 학습 효율이 크게 올라갑니다.",
             trainingPoint: `${module.meta.koTitle} 파트는 ${module.meta.summary}`,
+            preAnswerPoint: "정답을 확인하면 이 토픽이 왜 그 파트에 속하는지 바로 설명합니다.",
             explanation: `${module.meta.koTitle} 파트에서 이 토픽을 집중적으로 다룹니다.`,
         };
     }
