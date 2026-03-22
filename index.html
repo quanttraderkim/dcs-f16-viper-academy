@@ -7,8 +7,16 @@
     <script>
         (function redirectToAcademy() {
             const pathname = window.location.pathname || "/";
-            const basePath = pathname.endsWith("/") ? pathname : pathname.replace(/\/[^/]*$/, "/");
-            window.location.replace(basePath + "f16_viper_academy.html");
+            const basePath = pathname.endsWith("/")
+                ? pathname
+                : /\.[^/]+$/.test(pathname)
+                  ? pathname.replace(/[^/]*$/, "")
+                  : `${pathname}/`;
+            const target = new URL(
+                `f16_viper_academy.html${window.location.search || ""}${window.location.hash || ""}`,
+                `${window.location.origin}${basePath}`
+            );
+            window.location.replace(target.toString());
         })();
     </script>
 </head>

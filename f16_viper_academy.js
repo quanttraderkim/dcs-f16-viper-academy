@@ -6,6 +6,7 @@
     const pageTexts = window.__DCS_F16_GUIDE_PAGES__ || [];
     const pageTextsKo = window.__DCS_F16_GUIDE_PAGES_KO__ || [];
     const hasAnyKoTranslation = pageTextsKo.some((text) => Boolean(String(text || "").trim()));
+    const hasHdPageImages = Boolean(window.__DCS_F16_GUIDE_HD_IMAGES_ENABLED__);
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
@@ -456,6 +457,7 @@
     const refs = {};
     let guideSearchTimer = 0;
     let isGuideSearchComposing = false;
+    let imageModalReturnFocus = null;
 
     const state = {
         modules: [],
@@ -473,6 +475,7 @@
         searchResults: [],
         glossaryFilter: "",
         layoutMode: loadLayout().sidebarMode,
+        themeMode: loadLayout().themeMode,
         lastGuideSearchTerm: "",
     };
 
@@ -490,14 +493,17 @@
         renderRouteList();
         renderGlossary();
         renderAll();
+        applyTheme();
         applyLayout();
         startDrill("sequence", { countRun: false });
     }
 
     function captureRefs() {
+        refs.shell = document.querySelector(".shell");
         refs.workspace = document.getElementById("workspace");
         refs.workspaceToolbar = document.getElementById("workspaceToolbar");
         refs.layoutButtons = Array.from(document.querySelectorAll("[data-layout-mode]"));
+        refs.themeButtons = Array.from(document.querySelectorAll("[data-theme-mode]"));
         refs.workspaceAside = document.querySelector("#workspace > aside");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
@@ -515,6 +521,7 @@
         refs.searchResults = document.getElementById("searchResults");
         refs.searchResultsStatus = document.getElementById("searchResultsStatus");
         refs.imageModal = document.getElementById("imageModal");
+        refs.imageModalCard = document.getElementById("imageModalCard");
         refs.imageModalTitle = document.getElementById("imageModalTitle");
         refs.imageModalImage = document.getElementById("imageModalImage");
         refs.imageModalFallback = document.getElementById("imageModalFallback");
@@ -526,15 +533,21 @@
         refs.moduleDetail.addEventListener("click", handleDetailClick);
         refs.quizShell.addEventListener("click", handleQuizClick);
         refs.searchResults.addEventListener("click", handleSearchResultClick);
-        refs.glossarySearch.addEventListener("input", () => {
-            state.glossaryFilter = refs.glossarySearch.value.trim().toLowerCase();
-            renderGlossary();
-        });
-        refs.glossaryReset.addEventListener("click", () => {
-            refs.glossarySearch.value = "";
-            state.glossaryFilter = "";
-            renderGlossary();
-        });
+        if (refs.glossarySearch) {
+            refs.glossarySearch.addEventListener("input", () => {
+                state.glossaryFilter = refs.glossarySearch.value.trim().toLowerCase();
+                renderGlossary();
+            });
+        }
+        if (refs.glossaryReset) {
+            refs.glossaryReset.addEventListener("click", () => {
+                if (refs.glossarySearch) {
+                    refs.glossarySearch.value = "";
+                }
+                state.glossaryFilter = "";
+                renderGlossary();
+            });
+        }
         refs.guideSearchButton.addEventListener("click", () => runGuideSearch(true));
         refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
         refs.guideSearchInput.addEventListener("compositionstart", () => {
@@ -555,11 +568,7 @@
         refs.imageModalClose.addEventListener("click", closeImageModal);
         refs.imageModalImage.addEventListener("error", handleModalImageError);
         refs.imageModalImage.addEventListener("load", handleModalImageLoad);
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && refs.imageModal.classList.contains("open")) {
-                closeImageModal();
-            }
-        });
+        document.addEventListener("keydown", handleDocumentKeydown);
         document.querySelectorAll("[data-drill]").forEach((button) => {
             button.addEventListener("click", () => startDrill(button.dataset.drill));
         });
@@ -725,6 +734,9 @@
     }
 
     function renderGlossary() {
+        if (!refs.glossaryList) {
+            return;
+        }
         const filter = state.glossaryFilter;
         const filtered = state.glossary.filter((entry) => {
             if (!filter) {
@@ -918,7 +930,9 @@
         const rank = currentPilotRank();
         const objectiveText = session ? drillConfig.objective : "";
         const practiceValue = question.trainingValue || (drillConfig ? drillConfig.practiceValue : "");
-        const missionPoint = question.trainingPoint || question.reference;
+        const missionPoint = question.answered
+            ? question.trainingPoint || question.reference
+            : question.preAnswerPoint || "정답을 확인하면 이번 문제의 핵심 연결 포인트가 열립니다.";
         const badgeList = renderUnlockedBadges();
         const sessionGrade = session ? quizSessionGrade(session) : "입문";
 
@@ -1013,11 +1027,11 @@
         refs.searchResults.innerHTML = state.searchResults
             .map(
                 (result, index) => `
-                    <article class="search-card" data-search-index="${index}">
+                    <button class="search-card" data-search-index="${index}" type="button">
                         <strong>${escapeHtml(result.title)}</strong>
                         <div class="section-meta">${escapeHtml(result.meta)}</div>
                         <div class="search-snippet" style="margin-top:8px;">${escapeHtml(result.snippet)}</div>
-                    </article>
+                    </button>
                 `
             )
             .join("");
@@ -1065,7 +1079,7 @@
         const imageTrigger = event.target.closest("[data-open-image-modal]");
         if (imageTrigger) {
             const page = Number(imageTrigger.dataset.openImageModal) || state.selectedPage;
-            openImageModal(page);
+            openImageModal(page, imageTrigger);
         }
     }
 
@@ -1125,9 +1139,10 @@
         }
     }
 
-    function openImageModal(page) {
+    function openImageModal(page, trigger) {
         const module = getSelectedModule();
         const imageUrl = pageImageHdUrl(page);
+        imageModalReturnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
         state.modalImageUrl = imageUrl;
         state.modalImageTitle = `${module ? module.meta.koTitle : "Guide"} / ${formatPageRange(page, page)}`;
         state.modalImagePage = page;
@@ -1139,13 +1154,28 @@
         refs.imageModalImage.alt = state.modalImageTitle;
         refs.imageModal.classList.add("open");
         refs.imageModal.setAttribute("aria-hidden", "false");
+        if (refs.shell) {
+            refs.shell.inert = true;
+            refs.shell.setAttribute("aria-hidden", "true");
+        }
         document.body.style.overflow = "hidden";
+        window.requestAnimationFrame(() => {
+            refs.imageModalClose.focus();
+        });
     }
 
     function closeImageModal() {
         refs.imageModal.classList.remove("open");
         refs.imageModal.setAttribute("aria-hidden", "true");
+        if (refs.shell) {
+            refs.shell.inert = false;
+            refs.shell.removeAttribute("aria-hidden");
+        }
         document.body.style.overflow = "";
+        if (imageModalReturnFocus && typeof imageModalReturnFocus.focus === "function") {
+            imageModalReturnFocus.focus();
+        }
+        imageModalReturnFocus = null;
     }
 
     function handleModalImageError() {
@@ -1162,6 +1192,48 @@
     function handleModalImageLoad() {
         refs.imageModalFallback.style.display = "none";
         refs.imageModalImage.style.display = "block";
+    }
+
+    function handleDocumentKeydown(event) {
+        if (!refs.imageModal.classList.contains("open")) {
+            return;
+        }
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeImageModal();
+            return;
+        }
+        if (event.key === "Tab") {
+            trapFocusInImageModal(event);
+        }
+    }
+
+    function trapFocusInImageModal(event) {
+        const focusable = Array.from(
+            refs.imageModal.querySelectorAll(
+                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+        ).filter((element) => element.offsetParent !== null);
+
+        if (!focusable.length) {
+            event.preventDefault();
+            refs.imageModalClose.focus();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+            return;
+        }
+
+        if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
     }
 
     function startDrill(mode, options = {}) {
@@ -1232,6 +1304,7 @@
             feedback: "",
             trainingValue: pack.trainingGoal,
             trainingPoint: pack.debrief,
+            preAnswerPoint: "정답을 고르면 다음 체크가 왜 필요한지 바로 연결해서 보여줍니다.",
             explanation: pack.debrief,
         };
     }
@@ -1251,6 +1324,7 @@
             explanation: raw.explanation,
             trainingValue: "실제 전투나 센서 운용에서는 메뉴보다 손이 먼저 움직여야 합니다.",
             trainingPoint: raw.practicalUse || raw.explanation,
+            preAnswerPoint: "정답을 고르면 이 HOTAS 입력이 실전에서 언제 쓰이는지 바로 설명합니다.",
         };
     }
 
@@ -1278,6 +1352,7 @@
             feedback: "",
             trainingValue: "실전 중 막히면 해당 파트를 빠르게 다시 열 수 있어야 학습 효율이 크게 올라갑니다.",
             trainingPoint: `${module.meta.koTitle} 파트는 ${module.meta.summary}`,
+            preAnswerPoint: "정답을 확인하면 이 토픽이 왜 그 파트에 속하는지 바로 설명합니다.",
             explanation: `${module.meta.koTitle} 파트에서 이 토픽을 집중적으로 다룹니다.`,
         };
     }
@@ -1523,7 +1598,7 @@
             if (
                 pushResult({
                     title: `${entry.term} / ${entry.ko}`,
-                    meta: `용어 사전 / ${entry.part}`,
+                    meta: `용어 검색 / ${entry.part}`,
                     snippet: entry.desc,
                     moduleId,
                     page: module ? module.pageStart : null,
@@ -1631,11 +1706,34 @@
     }
 
     function handleWorkspaceToolbarClick(event) {
+        const themeButton = event.target.closest("[data-theme-mode]");
+        if (themeButton) {
+            setThemeMode(themeButton.dataset.themeMode);
+            return;
+        }
         const modeButton = event.target.closest("[data-layout-mode]");
         if (!modeButton) {
             return;
         }
         setLayoutMode(modeButton.dataset.layoutMode);
+    }
+
+    function setThemeMode(nextTheme) {
+        if (!["light", "dark"].includes(nextTheme)) {
+            return;
+        }
+        state.themeMode = nextTheme;
+        saveLayout();
+        applyTheme();
+    }
+
+    function applyTheme() {
+        document.body.dataset.theme = state.themeMode;
+        (refs.themeButtons || []).forEach((button) => {
+            const isActive = button.dataset.themeMode === state.themeMode;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
     }
 
     function setLayoutMode(nextMode) {
@@ -1737,7 +1835,7 @@
             bullets: [
                 "목차 구조를 먼저 보고 큰 흐름을 잡습니다.",
                 "영어 원문 제목과 페이지 범위를 같이 익힙니다.",
-                "모르는 용어는 용어 사전과 검색으로 바로 보완합니다.",
+                "모르는 용어는 통합 검색으로 바로 보완합니다.",
             ],
             terms: ["Guide"],
         };
@@ -1803,18 +1901,19 @@
         try {
             const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
             if (!raw) {
-                return { sidebarMode: "default" };
+                return { sidebarMode: "default", themeMode: "light" };
             }
             const parsed = JSON.parse(raw);
+            const themeMode = parsed && ["light", "dark"].includes(parsed.themeMode) ? parsed.themeMode : "light";
             if (parsed && ["default", "compact", "focus"].includes(parsed.sidebarMode)) {
-                return { sidebarMode: parsed.sidebarMode };
+                return { sidebarMode: parsed.sidebarMode, themeMode };
             }
             if (parsed && Object.prototype.hasOwnProperty.call(parsed, "sidebarCollapsed")) {
-                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default" };
+                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default", themeMode };
             }
-            return { sidebarMode: "default" };
+            return { sidebarMode: "default", themeMode };
         } catch (error) {
-            return { sidebarMode: "default" };
+            return { sidebarMode: "default", themeMode: "light" };
         }
     }
 
@@ -1825,7 +1924,7 @@
     function saveLayout() {
         localStorage.setItem(
             LAYOUT_STORAGE_KEY,
-            JSON.stringify({ sidebarMode: state.layoutMode })
+            JSON.stringify({ sidebarMode: state.layoutMode, themeMode: state.themeMode })
         );
     }
 
@@ -1873,6 +1972,9 @@
     }
 
     function pageImageHdUrl(page) {
+        if (!hasHdPageImages) {
+            return pageImageUrl(page);
+        }
         return `generated/dcs_f16_guide/page_images_hd/page-${String(page).padStart(4, "0")}.jpg`;
     }
 
