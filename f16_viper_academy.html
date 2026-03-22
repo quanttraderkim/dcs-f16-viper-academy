@@ -24,7 +24,7 @@
             --light-line: rgba(55, 78, 89, 0.18);
             --light-text-strong: #162a35;
             --light-text-body: rgba(22, 42, 53, 0.82);
-            --light-text-muted: rgba(22, 42, 53, 0.58);
+            --light-text-muted: rgba(22, 42, 53, 0.68);
             --accent: #ffb84d;
             --accent-deep: #e06b2f;
             --hud: #6af2d0;
@@ -1356,6 +1356,26 @@
         body[data-theme="light"] .module-rank,
         body[data-theme="light"] .quiz-kicker {
             color: #d97a1e;
+        }
+
+        body[data-theme="light"] .stat-label,
+        body[data-theme="light"] .english-title,
+        body[data-theme="light"] .section-meta,
+        body[data-theme="light"] .reader-language-label,
+        body[data-theme="light"] .search-snippet,
+        body[data-theme="light"] .empty-state,
+        body[data-theme="light"] .quiz-brief-copy,
+        body[data-theme="light"] .muted-badge,
+        body[data-theme="light"] .reader-fallback,
+        body[data-theme="light"] .image-modal-fallback {
+            color: var(--light-text-muted);
+        }
+
+        body[data-theme="light"] .sortie-status,
+        body[data-theme="light"] .sortie-badge,
+        body[data-theme="light"] .choice-button,
+        body[data-theme="light"] .reader-language-button.active {
+            color: #15303f;
         }
 
         body[data-theme="light"] .hero-panel,
