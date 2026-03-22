@@ -1362,6 +1362,7 @@
         body[data-theme="light"] .stat-card,
         body[data-theme="light"] .workspace-toolbar,
         body[data-theme="light"] .panel,
+        body[data-theme="light"] .briefing-card,
         body[data-theme="light"] .module-card,
         body[data-theme="light"] .drill-card,
         body[data-theme="light"] .quiz-shell,
@@ -1403,6 +1404,18 @@
 
         body[data-theme="light"] .reader-visual {
             background: linear-gradient(180deg, rgba(233, 243, 248, 0.98), rgba(220, 235, 243, 0.96));
+        }
+
+        body[data-theme="light"] .briefing-card {
+            background: linear-gradient(135deg, rgba(255, 184, 77, 0.12), rgba(121, 214, 255, 0.08));
+        }
+
+        body[data-theme="light"] .briefing-list li {
+            color: rgba(16, 39, 53, 0.82);
+        }
+
+        body[data-theme="light"] .briefing-card .muted:first-child {
+            color: #d97a1e;
         }
 
         body[data-theme="light"] .reader-image-shell {
@@ -1730,20 +1743,6 @@
                     </p>
                     <div class="module-list" id="moduleList"></div>
                 </section>
-
-                <section class="panel light">
-                    <div class="panel-kicker">Glossary</div>
-                    <h2 class="section-title">한영 용어 사전</h2>
-                    <p class="muted">
-                        F-16을 배우다 보면 결국 영어 약어를 피할 수 없습니다. 한국어 뜻과 함께 바로 익히도록
-                        정리했습니다.
-                    </p>
-                    <div class="glossary-search">
-                        <input class="text-input" id="glossarySearch" type="text" placeholder="예: TMS, IFF, AOA">
-                        <button class="action-button" id="glossaryReset">초기화</button>
-                    </div>
-                    <div class="glossary-list" id="glossaryList"></div>
-                </section>
             </aside>
 
             <main class="stack">
@@ -1784,11 +1783,10 @@
                     <div class="panel-kicker">Guide Search</div>
                     <h2 class="section-title">가이드 전체 검색</h2>
                     <p class="muted">
-                        영어 약어와 원문 토픽명뿐 아니라 한국어 번역 페이지 텍스트도 함께 검색할 수 있습니다. 결과를 누르면 해당 파트와 페이지로
-                        바로 이동합니다.
+                        영어 약어, 한글 뜻, 원문 토픽명, 한국어 번역 페이지 텍스트를 한 번에 찾습니다. 결과를 누르면 해당 파트와 페이지로 바로 이동합니다.
                     </p>
                     <div class="guide-search">
-                        <input class="text-input" id="guideSearchInput" type="text" placeholder="예: VHF, Probe Heat, ILS, 공중급유, 착륙">
+                        <input class="text-input" id="guideSearchInput" type="text" placeholder="예: VHF, Probe Heat, TMS, IFF, 공중급유, 착륙">
                         <button class="action-button" id="guideSearchButton">검색</button>
                     </div>
                     <div class="sr-only" id="searchResultsStatus" aria-live="polite" aria-atomic="true"></div>

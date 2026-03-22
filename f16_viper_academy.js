@@ -533,15 +533,21 @@
         refs.moduleDetail.addEventListener("click", handleDetailClick);
         refs.quizShell.addEventListener("click", handleQuizClick);
         refs.searchResults.addEventListener("click", handleSearchResultClick);
-        refs.glossarySearch.addEventListener("input", () => {
-            state.glossaryFilter = refs.glossarySearch.value.trim().toLowerCase();
-            renderGlossary();
-        });
-        refs.glossaryReset.addEventListener("click", () => {
-            refs.glossarySearch.value = "";
-            state.glossaryFilter = "";
-            renderGlossary();
-        });
+        if (refs.glossarySearch) {
+            refs.glossarySearch.addEventListener("input", () => {
+                state.glossaryFilter = refs.glossarySearch.value.trim().toLowerCase();
+                renderGlossary();
+            });
+        }
+        if (refs.glossaryReset) {
+            refs.glossaryReset.addEventListener("click", () => {
+                if (refs.glossarySearch) {
+                    refs.glossarySearch.value = "";
+                }
+                state.glossaryFilter = "";
+                renderGlossary();
+            });
+        }
         refs.guideSearchButton.addEventListener("click", () => runGuideSearch(true));
         refs.guideSearchInput.addEventListener("input", scheduleGuideSearch);
         refs.guideSearchInput.addEventListener("compositionstart", () => {
@@ -728,6 +734,9 @@
     }
 
     function renderGlossary() {
+        if (!refs.glossaryList) {
+            return;
+        }
         const filter = state.glossaryFilter;
         const filtered = state.glossary.filter((entry) => {
             if (!filter) {
@@ -1584,7 +1593,7 @@
             if (
                 pushResult({
                     title: `${entry.term} / ${entry.ko}`,
-                    meta: `용어 사전 / ${entry.part}`,
+                    meta: `용어 검색 / ${entry.part}`,
                     snippet: entry.desc,
                     moduleId,
                     page: module ? module.pageStart : null,
@@ -1821,7 +1830,7 @@
             bullets: [
                 "목차 구조를 먼저 보고 큰 흐름을 잡습니다.",
                 "영어 원문 제목과 페이지 범위를 같이 익힙니다.",
-                "모르는 용어는 용어 사전과 검색으로 바로 보완합니다.",
+                "모르는 용어는 통합 검색으로 바로 보완합니다.",
             ],
             terms: ["Guide"],
         };
