@@ -82,6 +82,27 @@
             pointer-events: none;
         }
 
+        body[data-theme="light"] {
+            color: #102735;
+            background:
+                radial-gradient(circle at 12% 0%, rgba(255, 184, 77, 0.24), transparent 26%),
+                radial-gradient(circle at 88% 12%, rgba(87, 167, 219, 0.16), transparent 22%),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.66) 0%, transparent 18%),
+                linear-gradient(180deg, #f7e7ca 0%, #eaf1f4 44%, #dde9ef 100%);
+        }
+
+        body[data-theme="light"]::before {
+            background:
+                linear-gradient(rgba(59, 103, 134, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 103, 134, 0.05) 1px, transparent 1px),
+                linear-gradient(135deg, rgba(255, 184, 77, 0.08), transparent 44%);
+            opacity: 0.48;
+        }
+
+        body[data-theme="light"]::after {
+            background: radial-gradient(circle, rgba(255, 184, 77, 0.12), transparent 68%);
+        }
+
         .shell {
             width: min(1540px, calc(100% - 32px));
             margin: 18px auto 44px;
@@ -362,7 +383,36 @@
             border: 1px solid rgba(255, 237, 192, 0.08);
         }
 
+        .toolbar-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .theme-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 237, 192, 0.08);
+        }
+
         .view-mode-button {
+            min-width: 84px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-body);
+            font-family: "Barlow Condensed", sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .theme-mode-button {
             min-width: 84px;
             padding: 10px 14px;
             border-radius: 10px;
@@ -376,6 +426,11 @@
         .view-mode-button.active {
             background: linear-gradient(135deg, rgba(255, 179, 71, 0.92), rgba(200, 107, 37, 0.9));
             color: #1c1710;
+        }
+
+        .theme-mode-button.active {
+            background: linear-gradient(135deg, rgba(106, 242, 208, 0.92), rgba(93, 183, 255, 0.88));
+            color: #061723;
         }
 
         .focus-note {
@@ -1248,6 +1303,145 @@
             color: #5f7d5d;
         }
 
+        body[data-theme="light"] .hero {
+            background: linear-gradient(135deg, rgba(252, 247, 238, 0.96) 0%, rgba(243, 234, 218, 0.98) 52%, rgba(234, 242, 247, 0.96) 100%);
+            border-color: rgba(78, 112, 129, 0.16);
+            box-shadow: 0 32px 88px rgba(73, 94, 107, 0.18);
+        }
+
+        body[data-theme="light"] .hero::before {
+            border-color: rgba(78, 112, 129, 0.08);
+        }
+
+        body[data-theme="light"] .hero::after {
+            background: radial-gradient(circle, rgba(121, 214, 255, 0.12), transparent 70%);
+        }
+
+        body[data-theme="light"] .hero-copy h1,
+        body[data-theme="light"] .hero-copy strong,
+        body[data-theme="light"] .hero-panel h2,
+        body[data-theme="light"] .hero-list-item strong,
+        body[data-theme="light"] .stat-value,
+        body[data-theme="light"] .section-title,
+        body[data-theme="light"] .module-title,
+        body[data-theme="light"] .drill-card h3,
+        body[data-theme="light"] .reader-visual-title,
+        body[data-theme="light"] .reader-body-label,
+        body[data-theme="light"] .quiz-question,
+        body[data-theme="light"] .sortie-tile strong,
+        body[data-theme="light"] .image-modal-title {
+            color: #102735;
+        }
+
+        body[data-theme="light"] .hero-copy p,
+        body[data-theme="light"] .hero-panel-note,
+        body[data-theme="light"] .hero-list-item,
+        body[data-theme="light"] .stat-note,
+        body[data-theme="light"] .muted,
+        body[data-theme="light"] .module-subtitle,
+        body[data-theme="light"] .drill-card p,
+        body[data-theme="light"] .quiz-context,
+        body[data-theme="light"] .feedback,
+        body[data-theme="light"] .reader-copy,
+        body[data-theme="light"] .sortie-tile span,
+        body[data-theme="light"] .sortie-tile small,
+        body[data-theme="light"] .sortie-brief,
+        body[data-theme="light"] .focus-note {
+            color: rgba(16, 39, 53, 0.78);
+        }
+
+        body[data-theme="light"] .eyebrow,
+        body[data-theme="light"] .toolbar-label,
+        body[data-theme="light"] .panel-kicker,
+        body[data-theme="light"] .module-rank,
+        body[data-theme="light"] .quiz-kicker {
+            color: #d97a1e;
+        }
+
+        body[data-theme="light"] .hero-panel,
+        body[data-theme="light"] .stat-card,
+        body[data-theme="light"] .workspace-toolbar,
+        body[data-theme="light"] .panel,
+        body[data-theme="light"] .module-card,
+        body[data-theme="light"] .drill-card,
+        body[data-theme="light"] .quiz-shell,
+        body[data-theme="light"] .sortie-board,
+        body[data-theme="light"] .reader-head,
+        body[data-theme="light"] .reader-body,
+        body[data-theme="light"] .search-card,
+        body[data-theme="light"] .glossary-card,
+        body[data-theme="light"] .section-card,
+        body[data-theme="light"] .image-modal-card,
+        body[data-theme="light"] .image-modal-body {
+            background: rgba(251, 247, 239, 0.9);
+            border-color: rgba(75, 107, 126, 0.14);
+            box-shadow: 0 18px 44px rgba(68, 92, 107, 0.12);
+        }
+
+        body[data-theme="light"] .panel.light {
+            background: rgba(255, 251, 245, 0.96);
+            border-color: rgba(75, 107, 126, 0.14);
+        }
+
+        body[data-theme="light"] .reader-visual,
+        body[data-theme="light"] .sortie-tile,
+        body[data-theme="light"] .reader-language,
+        body[data-theme="light"] .view-switch,
+        body[data-theme="light"] .theme-switch,
+        body[data-theme="light"] .flight-chip,
+        body[data-theme="light"] .route-chip,
+        body[data-theme="light"] .meta-chip,
+        body[data-theme="light"] .term-chip,
+        body[data-theme="light"] .sortie-status,
+        body[data-theme="light"] .sortie-badge,
+        body[data-theme="light"] .quiz-brief-card,
+        body[data-theme="light"] .choice-button {
+            background: rgba(238, 246, 250, 0.88);
+            border-color: rgba(75, 107, 126, 0.14);
+            color: #15303f;
+        }
+
+        body[data-theme="light"] .reader-visual {
+            background: linear-gradient(180deg, rgba(233, 243, 248, 0.98), rgba(220, 235, 243, 0.96));
+        }
+
+        body[data-theme="light"] .reader-image-shell {
+            background: rgba(255, 255, 255, 0.72);
+            border-color: rgba(75, 107, 126, 0.12);
+        }
+
+        body[data-theme="light"] .text-input,
+        body[data-theme="light"] .panel.light .text-input {
+            background: rgba(255, 255, 255, 0.88);
+            border-color: rgba(75, 107, 126, 0.18);
+            color: #102735;
+        }
+
+        body[data-theme="light"] .text-input::placeholder,
+        body[data-theme="light"] .panel.light .text-input::placeholder {
+            color: rgba(16, 39, 53, 0.4);
+        }
+
+        body[data-theme="light"] .small-button,
+        body[data-theme="light"] .panel.light .small-button {
+            background: rgba(232, 241, 246, 0.96);
+            color: #102735;
+            border: 1px solid rgba(75, 107, 126, 0.14);
+        }
+
+        body[data-theme="light"] .view-mode-button,
+        body[data-theme="light"] .theme-mode-button {
+            color: rgba(16, 39, 53, 0.72);
+        }
+
+        body[data-theme="light"] .image-modal-backdrop {
+            background: rgba(11, 26, 38, 0.34);
+        }
+
+        body[data-theme="light"] .image-modal-fallback {
+            color: #183345;
+        }
+
         .search-results {
             margin-top: 16px;
         }
@@ -1457,7 +1651,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
     <div class="shell">
         <header class="hero">
             <div class="eyebrow">Viper Academy / DCS F-16C</div>
@@ -1511,10 +1705,16 @@
                 <div class="toolbar-label">Reader Layout</div>
                 <p class="muted">표준은 전체 구조를, 압축은 더 넓은 브리핑을, 집중은 PDF와 한영 리더를 가장 크게 보여줍니다.</p>
             </div>
-            <div class="view-switch" role="group" aria-label="리더 레이아웃 선택">
-                <button class="view-mode-button" data-layout-mode="default" type="button">표준</button>
-                <button class="view-mode-button" data-layout-mode="compact" type="button">압축</button>
-                <button class="view-mode-button" data-layout-mode="focus" type="button">집중</button>
+            <div class="toolbar-controls">
+                <div class="theme-switch" role="group" aria-label="테마 선택">
+                    <button class="theme-mode-button" data-theme-mode="light" type="button">라이트</button>
+                    <button class="theme-mode-button" data-theme-mode="dark" type="button">다크</button>
+                </div>
+                <div class="view-switch" role="group" aria-label="리더 레이아웃 선택">
+                    <button class="view-mode-button" data-layout-mode="default" type="button">표준</button>
+                    <button class="view-mode-button" data-layout-mode="compact" type="button">압축</button>
+                    <button class="view-mode-button" data-layout-mode="focus" type="button">집중</button>
+                </div>
             </div>
             <div class="focus-note">좌측 패널 밀도를 조절해 PDF와 파트 브리핑을 더 크게 볼 수 있습니다.</div>
         </div>

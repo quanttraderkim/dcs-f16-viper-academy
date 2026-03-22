@@ -475,6 +475,7 @@
         searchResults: [],
         glossaryFilter: "",
         layoutMode: loadLayout().sidebarMode,
+        themeMode: loadLayout().themeMode,
         lastGuideSearchTerm: "",
     };
 
@@ -492,6 +493,7 @@
         renderRouteList();
         renderGlossary();
         renderAll();
+        applyTheme();
         applyLayout();
         startDrill("sequence", { countRun: false });
     }
@@ -501,6 +503,7 @@
         refs.workspace = document.getElementById("workspace");
         refs.workspaceToolbar = document.getElementById("workspaceToolbar");
         refs.layoutButtons = Array.from(document.querySelectorAll("[data-layout-mode]"));
+        refs.themeButtons = Array.from(document.querySelectorAll("[data-theme-mode]"));
         refs.workspaceAside = document.querySelector("#workspace > aside");
         refs.routeList = document.getElementById("routeList");
         refs.statPages = document.getElementById("statPages");
@@ -1689,11 +1692,34 @@
     }
 
     function handleWorkspaceToolbarClick(event) {
+        const themeButton = event.target.closest("[data-theme-mode]");
+        if (themeButton) {
+            setThemeMode(themeButton.dataset.themeMode);
+            return;
+        }
         const modeButton = event.target.closest("[data-layout-mode]");
         if (!modeButton) {
             return;
         }
         setLayoutMode(modeButton.dataset.layoutMode);
+    }
+
+    function setThemeMode(nextTheme) {
+        if (!["light", "dark"].includes(nextTheme)) {
+            return;
+        }
+        state.themeMode = nextTheme;
+        saveLayout();
+        applyTheme();
+    }
+
+    function applyTheme() {
+        document.body.dataset.theme = state.themeMode;
+        (refs.themeButtons || []).forEach((button) => {
+            const isActive = button.dataset.themeMode === state.themeMode;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
     }
 
     function setLayoutMode(nextMode) {
@@ -1861,18 +1887,19 @@
         try {
             const raw = localStorage.getItem(LAYOUT_STORAGE_KEY);
             if (!raw) {
-                return { sidebarMode: "default" };
+                return { sidebarMode: "default", themeMode: "light" };
             }
             const parsed = JSON.parse(raw);
+            const themeMode = parsed && ["light", "dark"].includes(parsed.themeMode) ? parsed.themeMode : "light";
             if (parsed && ["default", "compact", "focus"].includes(parsed.sidebarMode)) {
-                return { sidebarMode: parsed.sidebarMode };
+                return { sidebarMode: parsed.sidebarMode, themeMode };
             }
             if (parsed && Object.prototype.hasOwnProperty.call(parsed, "sidebarCollapsed")) {
-                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default" };
+                return { sidebarMode: parsed.sidebarCollapsed ? "focus" : "default", themeMode };
             }
-            return { sidebarMode: "default" };
+            return { sidebarMode: "default", themeMode };
         } catch (error) {
-            return { sidebarMode: "default" };
+            return { sidebarMode: "default", themeMode: "light" };
         }
     }
 
@@ -1883,7 +1910,7 @@
     function saveLayout() {
         localStorage.setItem(
             LAYOUT_STORAGE_KEY,
-            JSON.stringify({ sidebarMode: state.layoutMode })
+            JSON.stringify({ sidebarMode: state.layoutMode, themeMode: state.themeMode })
         );
     }
 
