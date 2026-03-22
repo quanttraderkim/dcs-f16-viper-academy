@@ -1081,17 +1081,17 @@
         .reader-layout {
             margin-top: 16px;
             display: grid;
-            grid-template-columns: minmax(620px, 1.62fr) minmax(320px, 0.74fr);
+            grid-template-columns: minmax(0, 1.62fr) minmax(280px, 0.74fr);
             gap: 16px;
             align-items: start;
         }
 
         .workspace.compact-mode .reader-layout {
-            grid-template-columns: minmax(700px, 1.78fr) minmax(320px, 0.68fr);
+            grid-template-columns: minmax(0, 1.72fr) minmax(280px, 0.68fr);
         }
 
         .workspace.focus-mode .reader-layout {
-            grid-template-columns: minmax(760px, 1.92fr) minmax(340px, 0.62fr);
+            grid-template-columns: minmax(0, 1.92fr) minmax(300px, 0.62fr);
         }
 
         .reader-visual,
@@ -1379,6 +1379,18 @@
             }
         }
 
+        @media (max-width: 1320px) {
+            .workspace {
+                grid-template-columns: 258px minmax(0, 1fr);
+            }
+
+            .reader-layout,
+            .workspace.compact-mode .reader-layout,
+            .workspace.focus-mode .reader-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 720px) {
             .shell {
                 width: min(100%, calc(100% - 18px));
@@ -1577,7 +1589,7 @@
 
     <div class="image-modal" id="imageModal" aria-hidden="true">
         <div class="image-modal-backdrop" data-close-image-modal="true"></div>
-        <div class="image-modal-card">
+        <div class="image-modal-card" id="imageModalCard" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle" tabindex="-1">
             <div class="image-modal-top">
                 <div class="image-modal-title" id="imageModalTitle">Guide Page</div>
                 <button class="action-button" id="imageModalClose" type="button">닫기</button>

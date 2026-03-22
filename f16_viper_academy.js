@@ -6,6 +6,7 @@
     const pageTexts = window.__DCS_F16_GUIDE_PAGES__ || [];
     const pageTextsKo = window.__DCS_F16_GUIDE_PAGES_KO__ || [];
     const hasAnyKoTranslation = pageTextsKo.some((text) => Boolean(String(text || "").trim()));
+    const hasHdPageImages = Boolean(window.__DCS_F16_GUIDE_HD_IMAGES_ENABLED__);
 
     const ROUTE_ORDER = [2, 3, 4, 5, 6, 9, 7, 8, 15, 16, 10, 12, 13, 14, 11, 17, 1, 18];
     const STORAGE_KEY = "viper-academy-progress-v1";
@@ -456,6 +457,7 @@
     const refs = {};
     let guideSearchTimer = 0;
     let isGuideSearchComposing = false;
+    let imageModalReturnFocus = null;
 
     const state = {
         modules: [],
@@ -495,6 +497,7 @@
     }
 
     function captureRefs() {
+        refs.shell = document.querySelector(".shell");
         refs.workspace = document.getElementById("workspace");
         refs.workspaceToolbar = document.getElementById("workspaceToolbar");
         refs.layoutButtons = Array.from(document.querySelectorAll("[data-layout-mode]"));
@@ -515,6 +518,7 @@
         refs.searchResults = document.getElementById("searchResults");
         refs.searchResultsStatus = document.getElementById("searchResultsStatus");
         refs.imageModal = document.getElementById("imageModal");
+        refs.imageModalCard = document.getElementById("imageModalCard");
         refs.imageModalTitle = document.getElementById("imageModalTitle");
         refs.imageModalImage = document.getElementById("imageModalImage");
         refs.imageModalFallback = document.getElementById("imageModalFallback");
@@ -555,11 +559,7 @@
         refs.imageModalClose.addEventListener("click", closeImageModal);
         refs.imageModalImage.addEventListener("error", handleModalImageError);
         refs.imageModalImage.addEventListener("load", handleModalImageLoad);
-        document.addEventListener("keydown", (event) => {
-            if (event.key === "Escape" && refs.imageModal.classList.contains("open")) {
-                closeImageModal();
-            }
-        });
+        document.addEventListener("keydown", handleDocumentKeydown);
         document.querySelectorAll("[data-drill]").forEach((button) => {
             button.addEventListener("click", () => startDrill(button.dataset.drill));
         });
@@ -1065,7 +1065,7 @@
         const imageTrigger = event.target.closest("[data-open-image-modal]");
         if (imageTrigger) {
             const page = Number(imageTrigger.dataset.openImageModal) || state.selectedPage;
-            openImageModal(page);
+            openImageModal(page, imageTrigger);
         }
     }
 
@@ -1125,9 +1125,10 @@
         }
     }
 
-    function openImageModal(page) {
+    function openImageModal(page, trigger) {
         const module = getSelectedModule();
         const imageUrl = pageImageHdUrl(page);
+        imageModalReturnFocus = trigger instanceof HTMLElement ? trigger : document.activeElement;
         state.modalImageUrl = imageUrl;
         state.modalImageTitle = `${module ? module.meta.koTitle : "Guide"} / ${formatPageRange(page, page)}`;
         state.modalImagePage = page;
@@ -1139,13 +1140,28 @@
         refs.imageModalImage.alt = state.modalImageTitle;
         refs.imageModal.classList.add("open");
         refs.imageModal.setAttribute("aria-hidden", "false");
+        if (refs.shell) {
+            refs.shell.inert = true;
+            refs.shell.setAttribute("aria-hidden", "true");
+        }
         document.body.style.overflow = "hidden";
+        window.requestAnimationFrame(() => {
+            refs.imageModalClose.focus();
+        });
     }
 
     function closeImageModal() {
         refs.imageModal.classList.remove("open");
         refs.imageModal.setAttribute("aria-hidden", "true");
+        if (refs.shell) {
+            refs.shell.inert = false;
+            refs.shell.removeAttribute("aria-hidden");
+        }
         document.body.style.overflow = "";
+        if (imageModalReturnFocus && typeof imageModalReturnFocus.focus === "function") {
+            imageModalReturnFocus.focus();
+        }
+        imageModalReturnFocus = null;
     }
 
     function handleModalImageError() {
@@ -1162,6 +1178,48 @@
     function handleModalImageLoad() {
         refs.imageModalFallback.style.display = "none";
         refs.imageModalImage.style.display = "block";
+    }
+
+    function handleDocumentKeydown(event) {
+        if (!refs.imageModal.classList.contains("open")) {
+            return;
+        }
+        if (event.key === "Escape") {
+            event.preventDefault();
+            closeImageModal();
+            return;
+        }
+        if (event.key === "Tab") {
+            trapFocusInImageModal(event);
+        }
+    }
+
+    function trapFocusInImageModal(event) {
+        const focusable = Array.from(
+            refs.imageModal.querySelectorAll(
+                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+        ).filter((element) => element.offsetParent !== null);
+
+        if (!focusable.length) {
+            event.preventDefault();
+            refs.imageModalClose.focus();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+            return;
+        }
+
+        if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
     }
 
     function startDrill(mode, options = {}) {
@@ -1873,6 +1931,9 @@
     }
 
     function pageImageHdUrl(page) {
+        if (!hasHdPageImages) {
+            return pageImageUrl(page);
+        }
         return `generated/dcs_f16_guide/page_images_hd/page-${String(page).padStart(4, "0")}.jpg`;
     }
 
