@@ -1928,6 +1928,10 @@
 
             .reader-head {
                 padding: 12px;
+                position: sticky;
+                top: 8px;
+                z-index: 8;
+                backdrop-filter: blur(12px);
             }
 
             .reader-controls {
@@ -1963,8 +1967,11 @@
             .reader-image-shell {
                 min-height: 0;
                 max-height: none;
-                padding: 10px;
-                overflow: hidden;
+                padding: 8px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
             }
 
             .reader-body {
@@ -1973,10 +1980,15 @@
                 padding: 14px;
             }
 
+            .reader-image {
+                width: 148%;
+                min-width: 148%;
+                max-width: none;
+                border-radius: 10px;
+            }
+
             .reader-page-hotspot {
-                top: 10px;
-                bottom: 10px;
-                width: 44px;
+                display: none;
             }
 
             .reader-page-hint {
@@ -2052,6 +2064,11 @@
 
             .reader-language-button {
                 padding: 10px 8px;
+            }
+
+            .reader-image {
+                width: 168%;
+                min-width: 168%;
             }
 
             .reader-visual-top,
