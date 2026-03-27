@@ -585,6 +585,7 @@
     let guideSearchTimer = 0;
     let isGuideSearchComposing = false;
     let imageModalReturnFocus = null;
+    let readerImageRequestId = 0;
 
     const state = {
         modules: [],
@@ -892,6 +893,7 @@
     }
 
     function renderModuleDetail() {
+        readerImageRequestId += 1;
         syncModuleForSelectedPage();
         const module = getSelectedModule();
         if (!module) {
@@ -986,7 +988,7 @@
                     </div>
                     <div class="route-banner" style="margin-top:14px;">
                         <button class="small-button" data-drill-start="daily">3분 시작</button>
-                        <button class="small-button" data-jump-page="${state.selectedPage}">현재 페이지 고정</button>
+                        <button class="small-button" data-jump-page="${state.selectedPage}" data-quick-loop-page="true">현재 페이지 고정</button>
                     </div>
                 </div>
             </div>
@@ -994,15 +996,15 @@
             <div class="reader-head">
                 <div>
                     <div class="panel-kicker">Guide Reader</div>
-                    <div class="muted">현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd} / ${languageBadge}</div>
+                    <div class="muted" data-reader-status>현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd} / ${languageBadge}</div>
                 </div>
                 <div class="reader-controls">
                     <div class="reader-language">
                         <span class="reader-language-label">Text</span>
-                        <button class="reader-language-button ${state.readerLanguage === "ko" ? "active" : ""}" data-reader-language="ko" type="button" ${translationAvailable ? "" : "disabled"}>
+                        <button class="reader-language-button ${state.readerLanguage === "ko" ? "active" : ""}" data-reader-language="ko" data-reader-language-button="ko" type="button" ${translationAvailable ? "" : "disabled"}>
                             한국어
                         </button>
-                        <button class="reader-language-button ${state.readerLanguage === "en" ? "active" : ""}" data-reader-language="en" type="button">
+                        <button class="reader-language-button ${state.readerLanguage === "en" ? "active" : ""}" data-reader-language="en" data-reader-language-button="en" type="button">
                             English
                         </button>
                     </div>
@@ -1014,26 +1016,27 @@
             </div>
             <div class="reader-meta">
                 <span class="meta-chip">${escapeHtml(module.meta.koTitle)}</span>
-                <span class="meta-chip">${formatPageRange(state.selectedPage, state.selectedPage)}</span>
-                <span class="meta-chip">${escapeHtml(languageBadge)}</span>
+                <span class="meta-chip" data-reader-page-chip>${formatPageRange(state.selectedPage, state.selectedPage)}</span>
+                <span class="meta-chip" data-reader-language-chip>${escapeHtml(languageBadge)}</span>
             </div>
-            <div class="reader-layout">
+            <div class="reader-layout" data-reader-frame="true">
                 <div class="reader-visual">
                     <div class="reader-visual-top">
-                        <div class="reader-visual-title">Page Visual / ${formatPageRange(state.selectedPage, state.selectedPage)}</div>
-                        <button class="action-button" data-open-image-modal="${state.selectedPage}" type="button">크게 보기</button>
+                        <div class="reader-visual-title" data-reader-visual-title>Page Visual / ${formatPageRange(state.selectedPage, state.selectedPage)}</div>
+                        <button class="action-button" data-open-image-modal="${state.selectedPage}" data-reader-open-image type="button">크게 보기</button>
                     </div>
-                    <div class="reader-image-shell">
+                    <div class="reader-image-shell" data-reader-image-shell>
                         <button class="reader-page-hotspot prev" data-page-action="prev" type="button" aria-label="이전 페이지" ${atFirstPage ? "disabled" : ""}></button>
                         <button class="reader-page-hotspot next" data-page-action="next" type="button" aria-label="다음 페이지" ${atLastPage ? "disabled" : ""}></button>
                         <img
+                            id="readerImage"
                             class="reader-image"
                             src="${escapeHtml(imageUrl)}"
                             alt="Guide page ${state.selectedPage}"
                             data-open-image-modal="${state.selectedPage}"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
-                        <div class="reader-fallback">
+                        <div class="reader-fallback" id="readerFallback">
                             이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
                             <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
                         </div>
@@ -1043,12 +1046,12 @@
                 <section class="reader-body">
                     <div class="reader-body-head">
                         <div class="reader-body-title">
-                            <span class="reader-body-label">${escapeHtml(state.readerLanguage === "ko" && translationAvailable ? "Korean Reader" : "English Reader")}</span>
-                            <div class="muted">${escapeHtml(readerHeadline)}</div>
+                            <span class="reader-body-label" data-reader-body-label>${escapeHtml(state.readerLanguage === "ko" && translationAvailable ? "Korean Reader" : "English Reader")}</span>
+                            <div class="muted" data-reader-headline>${escapeHtml(readerHeadline)}</div>
                         </div>
-                        <span class="meta-chip">${escapeHtml(languageBadge)}</span>
+                        <span class="meta-chip" data-reader-language-chip>${escapeHtml(languageBadge)}</span>
                     </div>
-                    <article class="reader-copy">${escapeHtml(pageText)}</article>
+                    <article class="reader-copy" data-reader-copy>${escapeHtml(pageText)}</article>
                 </section>
             </div>
         `;
@@ -1189,9 +1192,7 @@
     function handleDetailClick(event) {
         const pageJump = event.target.closest("[data-jump-page]");
         if (pageJump) {
-            setSelectedPage(Number(pageJump.dataset.jumpPage) || state.selectedPage);
-            renderModules();
-            renderModuleDetail();
+            navigateToPage(Number(pageJump.dataset.jumpPage) || state.selectedPage);
             return;
         }
 
@@ -1244,9 +1245,7 @@
             if (state.quiz && state.quiz.moduleId) {
                 openModule(state.quiz.moduleId, page);
             } else {
-                setSelectedPage(page);
-                renderModules();
-                renderModuleDetail();
+                navigateToPage(page);
             }
             return;
         }
@@ -1276,18 +1275,17 @@
         if (!module) {
             return;
         }
-        const totalPages = guidePageCount();
+        let nextPage = state.selectedPage;
         if (action === "first") {
-            setSelectedPage(module.pageStart);
+            nextPage = module.pageStart;
         } else if (action === "prev") {
-            setSelectedPage(state.selectedPage - 1);
+            nextPage = state.selectedPage - 1;
         } else if (action === "next") {
-            setSelectedPage(state.selectedPage + 1);
+            nextPage = state.selectedPage + 1;
         } else if (action === "last") {
-            setSelectedPage(module.pageEnd);
+            nextPage = module.pageEnd;
         }
-        renderModuleDetail();
-        renderModules();
+        navigateToPage(nextPage);
     }
 
     function handleImageModalClick(event) {
@@ -2061,9 +2059,14 @@
         if (!module) {
             return;
         }
+        const previousModuleId = state.selectedModuleId;
         state.selectedModuleId = module.id;
         setSelectedPage(page || module.pageStart);
         renderModules();
+        if (previousModuleId === state.selectedModuleId && canRefreshReaderInPlace()) {
+            refreshModuleReader();
+            return;
+        }
         renderModuleDetail();
     }
 
@@ -2098,6 +2101,150 @@
         if (state.readerLanguage === "ko" && !hasKoTranslation(state.selectedPage)) {
             state.readerLanguage = "en";
         }
+    }
+
+    function navigateToPage(page) {
+        const previousModuleId = state.selectedModuleId;
+        setSelectedPage(page);
+        renderModules();
+        if (previousModuleId === state.selectedModuleId && canRefreshReaderInPlace()) {
+            refreshModuleReader();
+            return;
+        }
+        renderModuleDetail();
+    }
+
+    function canRefreshReaderInPlace() {
+        return Boolean(refs.moduleDetail && refs.moduleDetail.querySelector('[data-reader-frame="true"]'));
+    }
+
+    function refreshModuleReader() {
+        const module = getSelectedModule();
+        if (!module || !refs.moduleDetail) {
+            renderModuleDetail();
+            return;
+        }
+
+        const totalPages = guidePageCount();
+        state.selectedPage = clamp(state.selectedPage, 1, totalPages);
+        const pageText = currentReaderText(state.selectedPage);
+        const translationAvailable = hasKoTranslation(state.selectedPage);
+        const atModuleStart = state.selectedPage <= module.pageStart;
+        const atModuleEnd = state.selectedPage >= module.pageEnd;
+        const atFirstPage = state.selectedPage <= 1;
+        const atLastPage = state.selectedPage >= totalPages;
+        const languageBadge =
+            state.readerLanguage === "ko" && translationAvailable ? "한국어 기계번역" : "영문 추출본";
+        const readerHeadline =
+            state.readerLanguage === "ko" && translationAvailable
+                ? "한국어로 먼저 이해하고, 필요할 때 바로 영문 용어로 전환하세요."
+                : "영문 원문 기반 페이지입니다. 필요하면 인접 페이지도 함께 확인하세요.";
+
+        setElementText('[data-reader-status]', `현재 페이지 ${state.selectedPage} / 모듈 범위 ${module.pageStart}-${module.pageEnd} / ${languageBadge}`);
+        setElementText('[data-reader-page-chip]', formatPageRange(state.selectedPage, state.selectedPage), true);
+        setElementText('[data-reader-language-chip]', languageBadge, true);
+        setElementText('[data-reader-visual-title]', `Page Visual / ${formatPageRange(state.selectedPage, state.selectedPage)}`);
+        setElementText('[data-reader-body-label]', state.readerLanguage === "ko" && translationAvailable ? "Korean Reader" : "English Reader");
+        setElementText('[data-reader-headline]', readerHeadline);
+        setElementText('[data-reader-copy]', pageText);
+
+        const koButton = refs.moduleDetail.querySelector('[data-reader-language-button="ko"]');
+        const enButton = refs.moduleDetail.querySelector('[data-reader-language-button="en"]');
+        if (koButton) {
+            koButton.disabled = !translationAvailable;
+            koButton.classList.toggle("active", state.readerLanguage === "ko");
+        }
+        if (enButton) {
+            enButton.classList.toggle("active", state.readerLanguage === "en");
+        }
+
+        updatePageActionDisabledState("first", atModuleStart);
+        updatePageActionDisabledState("prev", atFirstPage);
+        updatePageActionDisabledState("next", atLastPage);
+        updatePageActionDisabledState("last", atModuleEnd);
+
+        refs.moduleDetail.querySelectorAll('[data-quick-loop-page="true"]').forEach((element) => {
+            element.dataset.jumpPage = String(state.selectedPage);
+        });
+
+        updateReaderImage(pageImageUrl(state.selectedPage));
+    }
+
+    function setElementText(selector, text, all = false) {
+        if (!refs.moduleDetail) {
+            return;
+        }
+        const elements = all
+            ? Array.from(refs.moduleDetail.querySelectorAll(selector))
+            : [refs.moduleDetail.querySelector(selector)].filter(Boolean);
+        elements.forEach((element) => {
+            element.textContent = text;
+        });
+    }
+
+    function updatePageActionDisabledState(action, disabled) {
+        if (!refs.moduleDetail) {
+            return;
+        }
+        refs.moduleDetail.querySelectorAll(`[data-page-action="${action}"]`).forEach((button) => {
+            button.disabled = disabled;
+        });
+    }
+
+    function updateReaderImage(nextUrl) {
+        if (!refs.moduleDetail) {
+            return;
+        }
+        const shell = refs.moduleDetail.querySelector("[data-reader-image-shell]");
+        const image = refs.moduleDetail.querySelector("#readerImage");
+        const fallback = refs.moduleDetail.querySelector("#readerFallback");
+        if (!shell || !image || !fallback) {
+            return;
+        }
+
+        if (image.getAttribute("src") === nextUrl && image.style.display !== "none") {
+            shell.classList.remove("is-loading");
+            fallback.style.display = "none";
+            image.alt = `Guide page ${state.selectedPage}`;
+            image.dataset.openImageModal = String(state.selectedPage);
+            refs.moduleDetail.querySelectorAll("[data-reader-open-image]").forEach((element) => {
+                element.dataset.openImageModal = String(state.selectedPage);
+            });
+            return;
+        }
+
+        const requestId = ++readerImageRequestId;
+        shell.classList.add("is-loading");
+
+        const loader = new window.Image();
+        loader.onload = () => {
+            if (requestId !== readerImageRequestId) {
+                return;
+            }
+            image.src = nextUrl;
+            image.style.display = "block";
+            image.alt = `Guide page ${state.selectedPage}`;
+            image.dataset.openImageModal = String(state.selectedPage);
+            refs.moduleDetail.querySelectorAll("[data-reader-open-image]").forEach((element) => {
+                element.dataset.openImageModal = String(state.selectedPage);
+            });
+            fallback.style.display = "none";
+            shell.classList.remove("is-loading");
+        };
+        loader.onerror = () => {
+            if (requestId !== readerImageRequestId) {
+                return;
+            }
+            image.alt = `Guide page ${state.selectedPage}`;
+            image.dataset.openImageModal = String(state.selectedPage);
+            refs.moduleDetail.querySelectorAll("[data-reader-open-image]").forEach((element) => {
+                element.dataset.openImageModal = String(state.selectedPage);
+            });
+            image.style.display = "none";
+            fallback.style.display = "block";
+            shell.classList.remove("is-loading");
+        };
+        loader.src = nextUrl;
     }
 
     function buildPracticeHint(module) {
