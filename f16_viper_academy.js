@@ -411,7 +411,131 @@
         },
     ];
 
+    const COLD_START_MISSION = {
+        title: "Cold Start Academy",
+        moduleTitle: "Part 4 - Start-Up Procedure",
+        modeLabel: "콜드스타트 아카데미 / Cold Start Academy",
+        trainingGoal: "램프에서 바로 DCS를 켤 수 있도록, 시동을 스위치 암기가 아니라 단계 흐름으로 기억하게 만듭니다.",
+        debrief: "전원, 사전 세팅, 엔진 시동, INS, 항전장비, 최종 체크 흐름이 머리에 남아야 램프에서 손이 멈추지 않습니다.",
+        steps: [
+            { ko: "메인 전원과 배터리로 기체 전원 공급", en: "Provide aircraft electrical power" },
+            { ko: "시동 전 스위치와 안전 상태 정리", en: "Set pre-start switches and safety items" },
+            { ko: "JFS로 엔진 스풀업 시작", en: "Use JFS to begin engine spool-up" },
+            { ko: "RPM, FTIT, 유압 등 엔진 상태 확인", en: "Monitor RPM, FTIT and hydraulic indications" },
+            { ko: "발전기와 FLCS 포함 기본 시스템 안정화", en: "Stabilize generator and FLCS-related systems" },
+            { ko: "INS 정렬 시작", en: "Begin INS alignment" },
+            { ko: "MFD, DED, 통신, 센서 기본 세팅", en: "Set MFD, DED, radios and core avionics" },
+            { ko: "데이터링크와 IFF 설정", en: "Configure datalink and IFF" },
+            { ko: "EPU, 연료, 경고등, 조종면 등 최종 체크", en: "Run final EPU, fuel, caution and control checks" },
+            { ko: "택시 전 출발 준비 완료", en: "Confirm ready for taxi" },
+        ],
+    };
+
+    const PANEL_SPOTTING_TARGETS = [
+        {
+            label: "Probe Heat",
+            ko: "프로브 히트",
+            moduleTitle: "Part 5 - Taxi & Takeoff",
+            searchTerms: ["probe heat"],
+            practicalUse: "이륙 전 체크에서 자주 빠뜨리기 쉬운 항목이라, 실제로는 활주로 진입 전 손이 먼저 가야 합니다.",
+            explanation: "Probe Heat는 이륙 전 체크 흐름에서 빠지기 쉬운 스위치라 위치를 빨리 찾을 수 있어야 합니다.",
+        },
+        {
+            label: "NWS A/R DISC",
+            ko: "노즈휠 스티어링 버튼",
+            moduleTitle: "Part 5 - Taxi & Takeoff",
+            searchTerms: ["nws a/r disc", "nosewheel steering", "nws"],
+            practicalUse: "활주와 이륙 가속 중 NWS 해제 타이밍이 흐트러지면 출발부터 꼬이기 쉽습니다.",
+            explanation: "NWS A/R DISC는 지상 활주와 공중급유 등 맥락이 달라서, 문서에서 정확한 설명 위치를 빨리 찾는 게 중요합니다.",
+        },
+        {
+            label: "JFS",
+            ko: "제트 연료 시동기",
+            moduleTitle: "Part 4 - Start-Up Procedure",
+            searchTerms: ["jfs", "jet fuel starter"],
+            practicalUse: "시동 절차에서 JFS 위치와 관련 체크를 놓치면 처음부터 램프에서 멈추게 됩니다.",
+            explanation: "JFS는 시동 흐름의 핵심 시작점이라, 페이지 위치를 기억해두면 램프 복습 속도가 빨라집니다.",
+        },
+        {
+            label: "FLCS",
+            ko: "비행제어 시스템",
+            moduleTitle: "Part 4 - Start-Up Procedure",
+            searchTerms: ["flcs"],
+            practicalUse: "FLCS 상태 확인은 단순 스위치보다 비행 가능 상태로 넘어가는 체크포인트로 기억하는 편이 좋습니다.",
+            explanation: "FLCS는 F-16 특성상 시동 절차와 비행 안정성의 연결고리라 위치와 확인 맥락을 같이 익혀야 합니다.",
+        },
+        {
+            label: "DED",
+            ko: "데이터 입력 디스플레이",
+            moduleTitle: "Part 3 - Cockpit & Equipment",
+            searchTerms: ["ded"],
+            practicalUse: "항법, 통신, IFF, 데이터링크를 건드릴 때 DED를 읽지 못하면 이후 세팅이 전부 느려집니다.",
+            explanation: "DED는 이후 거의 모든 시스템 조작과 연결되므로, 조종석 읽기의 출발점으로 자주 복습하는 게 좋습니다.",
+        },
+        {
+            label: "VHF",
+            ko: "VHF 무전",
+            moduleTitle: "Part 3 - Cockpit & Equipment",
+            searchTerms: ["vhf"],
+            practicalUse: "브리핑을 받고도 무전기 위치가 안 잡히면 실제 임무에서 바로 끊깁니다.",
+            explanation: "VHF는 가이드 검색에서도 자주 찾게 되는 항목이라, 패널 위치를 같이 기억해두면 실전 전환이 빨라집니다.",
+        },
+        {
+            label: "HUD",
+            ko: "헤드업 디스플레이",
+            moduleTitle: "Part 3 - Cockpit & Equipment",
+            searchTerms: ["hud", "head-up display"],
+            practicalUse: "HUD는 계속 보고는 있지만, 어떤 페이지에서 체계적으로 설명되는지 아는 것만으로도 복습 효율이 좋아집니다.",
+            explanation: "HUD는 모든 비행 단계와 연결되는 기본 장비라, 설명 페이지를 바로 여는 능력이 쌓이면 전체 복습 속도가 빨라집니다.",
+        },
+        {
+            label: "Speed Brake",
+            ko: "스피드 브레이크",
+            moduleTitle: "Part 5 - Taxi & Takeoff",
+            searchTerms: ["speed brake", "speed brakes"],
+            practicalUse: "접근과 패턴 진입에서 자주 만지는 만큼, 위치와 설명 페이지를 같이 떠올리는 편이 좋습니다.",
+            explanation: "Speed Brake는 HOTAS와 패턴 운용이 만나는 지점이라, 어디서 설명되는지 빠르게 찾는 연습이 실전에도 이어집니다.",
+        },
+        {
+            label: "TACAN",
+            ko: "전술 항법 장치",
+            moduleTitle: "Part 16 - Navigation & ILS Landing",
+            searchTerms: ["tacan"],
+            practicalUse: "항법 세팅은 DCS 켰을 때 가장 늦게 떠오르기 쉬운 부분이라, 짧게 자주 복습하는 게 효과적입니다.",
+            explanation: "TACAN은 귀환과 접근까지 이어지는 핵심 항법 장치라, 설명 위치를 빨리 찾는 게 실제 임무 완주에 도움이 됩니다.",
+        },
+        {
+            label: "ILS",
+            ko: "계기착륙장치",
+            moduleTitle: "Part 16 - Navigation & ILS Landing",
+            searchTerms: ["ils", "instrument landing system"],
+            practicalUse: "ILS는 야간이나 악기상 착륙 준비 때 가장 먼저 다시 보고 싶은 항목 중 하나입니다.",
+            explanation: "ILS는 착륙 파트와 항법 파트를 연결하는 대표 항목이라, 관련 페이지를 익혀두면 접근 전에 빠르게 복습할 수 있습니다.",
+        },
+    ];
+
     const DRILL_CONFIGS = {
+        daily: {
+            label: "오늘의 3분 훈련",
+            objective: "가장 약한 파트와 자주 막히는 흐름을 섞어서 3분 안에 복습하는 짧은 세션입니다.",
+            practiceValue: "바쁜 날에도 완전히 끊기지 않게, 오늘 가장 필요한 문제만 빠르게 다시 떠올리게 합니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
+        coldstart: {
+            label: "콜드스타트 아카데미",
+            objective: "배터리, JFS, 엔진, INS, 항전장비 흐름을 램프 시점처럼 이어서 훈련합니다.",
+            practiceValue: "시동은 한 번 꼬이면 자신감이 크게 떨어지기 쉬워서, 따로 떼어 반복하는 가치가 큽니다.",
+            totalRounds: 6,
+            lives: 3,
+        },
+        panel: {
+            label: "패널 찾기 훈련",
+            objective: "실제 PDF 페이지 그림을 보고 스위치와 패널이 나오는 페이지를 빨리 찾아내는 감각을 만듭니다.",
+            practiceValue: "문서에서 위치를 빨리 찾을 수 있어야 짧은 시간 복습이 DCS 실전으로 이어집니다.",
+            totalRounds: 5,
+            lives: 3,
+        },
         sequence: {
             label: "체크리스트 플로우",
             objective: "시동, 활주, 이륙, 착륙 절차를 실제 체크리스트 흐름처럼 반복 훈련합니다.",
@@ -439,6 +563,9 @@
         first_sortie: { label: "첫 정답", desc: "첫 문제를 맞혔습니다." },
         hot_streak: { label: "3연속 정답", desc: "3연속 정답을 달성했습니다." },
         clean_sortie: { label: "무실수 완주", desc: "오답 없이 훈련을 완주했습니다." },
+        daily_briefer: { label: "3분 루프", desc: "오늘의 3분 훈련을 클리어했습니다." },
+        cold_start_ready: { label: "램프 준비", desc: "콜드스타트 아카데미를 클리어했습니다." },
+        panel_hunter: { label: "패널 헌터", desc: "패널 찾기 훈련을 클리어했습니다." },
         systems_brain: { label: "HOTAS 감각", desc: "HOTAS 반응 훈련을 클리어했습니다." },
         route_reader: { label: "구조 독파", desc: "가이드 구조 훈련을 클리어했습니다." },
         checklist_flow: { label: "절차 숙달", desc: "체크리스트 플로우를 클리어했습니다." },
@@ -495,7 +622,7 @@
         renderAll();
         applyTheme();
         applyLayout();
-        startDrill("sequence", { countRun: false });
+        startDrill("daily", { countRun: false });
     }
 
     function captureRefs() {
@@ -843,9 +970,23 @@
                         ${escapeHtml(buildPracticeHint(module))}
                     </div>
                     <div class="route-banner" style="margin-top:14px;">
-                        <button class="small-button" data-drill-start="sequence">절차 훈련</button>
+                        <button class="small-button" data-drill-start="daily">오늘의 3분 훈련</button>
+                        <button class="small-button" data-drill-start="coldstart">콜드스타트</button>
+                        <button class="small-button" data-drill-start="sequence">절차 플로우</button>
+                        <button class="small-button" data-drill-start="panel">패널 찾기</button>
                         <button class="small-button" data-drill-start="hotas">HOTAS 반응 훈련</button>
                         <button class="small-button" data-drill-start="topic">구조 훈련</button>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <strong>바쁜 날 루프 / Quick Loop</strong>
+                    <div class="muted">
+                        ${escapeHtml(buildQuickStudyPlan(module))}
+                    </div>
+                    <div class="route-banner" style="margin-top:14px;">
+                        <button class="small-button" data-drill-start="daily">3분 시작</button>
+                        <button class="small-button" data-jump-page="${state.selectedPage}">현재 페이지 고정</button>
                     </div>
                 </div>
             </div>
@@ -918,7 +1059,7 @@
             refs.quizShell.innerHTML = `
                 <div class="quiz-kicker">훈련 대기</div>
                 <div class="quiz-question">훈련 하나를 선택해 시작하세요.</div>
-                <div class="quiz-context">체크리스트 플로우는 절차 감각, HOTAS 반응 훈련은 손 기억, 가이드 구조 훈련은 필요한 파트를 빨리 찾는 감각을 키웁니다.</div>
+                <div class="quiz-context">오늘의 3분 훈련은 약한 파트를 빠르게 복습하고, 콜드스타트와 패널 찾기 훈련은 실제 DCS 진입 전에 기억을 살려줍니다.</div>
             `;
             return;
         }
@@ -994,27 +1135,18 @@
                     <div class="quiz-brief-copy">${escapeHtml(missionPoint)}</div>
                 </article>
             </div>
-            <div class="question-choices">
-                ${question.choices
-                    .map((choice, index) => {
-                        let className = "choice-button";
-                        if (question.answered) {
-                            if (index === question.answerIndex) {
-                                className += " correct";
-                            } else if (index === question.selectedIndex) {
-                                className += " wrong";
-                            }
-                        }
-                        return `<button class="${className}" data-choice-index="${index}">${escapeHtml(choice)}</button>`;
-                    })
-                    .join("")}
-            </div>
+            ${renderQuestionChoices(question)}
             <div class="quiz-footer">
                 <div class="feedback">
                     ${question.answered ? escapeHtml(question.feedback) : `참조: ${escapeHtml(question.reference)}`}
                 </div>
                 <div class="reader-controls">
                     <button class="small-button" data-quiz-refresh="${escapeHtml(question.mode)}">${escapeHtml(nextActionLabel)}</button>
+                    ${
+                        question.pageJump && question.answered
+                            ? `<button class="small-button" data-open-page="${question.pageJump}">정답 페이지 열기</button>`
+                            : ""
+                    }
                     ${
                         question.moduleId
                             ? `<button class="small-button" data-open-module="${escapeHtml(question.moduleId)}">관련 파트 열기</button>`
@@ -1103,6 +1235,19 @@
         const refresh = event.target.closest("[data-quiz-refresh]");
         if (refresh) {
             advanceQuiz(refresh.dataset.quizRefresh);
+            return;
+        }
+
+        const pageButton = event.target.closest("[data-open-page]");
+        if (pageButton) {
+            const page = Number(pageButton.dataset.openPage) || state.selectedPage;
+            if (state.quiz && state.quiz.moduleId) {
+                openModule(state.quiz.moduleId, page);
+            } else {
+                setSelectedPage(page);
+                renderModules();
+                renderModuleDetail();
+            }
             return;
         }
 
@@ -1250,7 +1395,7 @@
 
     function startDrill(mode, options = {}) {
         const { countRun = true } = options;
-        const config = DRILL_CONFIGS[mode] || DRILL_CONFIGS.sequence;
+        const config = DRILL_CONFIGS[mode] || DRILL_CONFIGS.daily;
         state.quizSession = createQuizSession(mode, config);
         state.quiz = buildQuizForMode(mode);
         if (countRun) {
@@ -1262,7 +1407,7 @@
     }
 
     function advanceQuiz(mode) {
-        const nextMode = mode || (state.quizSession ? state.quizSession.mode : "sequence");
+        const nextMode = mode || (state.quizSession ? state.quizSession.mode : "daily");
         if (!state.quizSession || state.quizSession.mode !== nextMode || state.quizSession.status !== "active") {
             startDrill(nextMode);
             return;
@@ -1279,6 +1424,15 @@
     }
 
     function buildQuizForMode(mode) {
+        if (mode === "daily") {
+            return buildDailyQuestion();
+        }
+        if (mode === "coldstart") {
+            return buildColdStartQuestion();
+        }
+        if (mode === "panel") {
+            return buildPanelQuestion();
+        }
         if (mode === "hotas") {
             return buildHotasQuestion();
         }
@@ -1288,8 +1442,11 @@
         return buildSequenceQuestion();
     }
 
-    function buildSequenceQuestion() {
-        const pack = sample(SEQUENCE_PACKS);
+    function buildSequenceQuestion(preferredModuleTitle = "") {
+        return buildSequenceQuestionFromPack(sequencePackForModule(preferredModuleTitle) || sample(SEQUENCE_PACKS));
+    }
+
+    function buildSequenceQuestionFromPack(pack, overrides = {}) {
         const stepIndex = randomInt(1, pack.steps.length - 1);
         const correctStep = pack.steps[stepIndex];
         const distractors = shuffle(
@@ -1305,20 +1462,32 @@
             .join("\n");
 
         return {
-            mode: "sequence",
-            kicker: `${pack.modeLabel} / ${pack.title}`,
-            prompt: "지금 흐름에서 다음으로 이어져야 할 체크 절차는 무엇입니까?",
-            context: `현재까지 진행:\n${contextSteps}`,
+            mode: overrides.mode || "sequence",
+            kicker: overrides.kicker || `${pack.modeLabel} / ${pack.title}`,
+            prompt: overrides.prompt || "지금 흐름에서 다음으로 이어져야 할 체크 절차는 무엇입니까?",
+            context: overrides.context || `현재까지 진행:\n${contextSteps}`,
             choices,
             answerIndex,
             moduleId: moduleIdForTitle(pack.moduleTitle),
             reference: pack.moduleTitle,
             feedback: "",
-            trainingValue: pack.trainingGoal,
-            trainingPoint: pack.debrief,
-            preAnswerPoint: "정답을 고르면 다음 체크가 왜 필요한지 바로 연결해서 보여줍니다.",
-            explanation: pack.debrief,
+            trainingValue: overrides.trainingValue || pack.trainingGoal,
+            trainingPoint: overrides.trainingPoint || pack.debrief,
+            preAnswerPoint: overrides.preAnswerPoint || "정답을 고르면 다음 체크가 왜 필요한지 바로 연결해서 보여줍니다.",
+            explanation: overrides.explanation || pack.debrief,
+            pageJump: overrides.pageJump || null,
         };
+    }
+
+    function buildColdStartQuestion() {
+        return buildSequenceQuestionFromPack(COLD_START_MISSION, {
+            mode: "coldstart",
+            kicker: COLD_START_MISSION.modeLabel,
+            prompt: "램프 시동 흐름에서 지금 다음으로 이어져야 할 큰 단계는 무엇입니까?",
+            trainingValue: COLD_START_MISSION.trainingGoal,
+            trainingPoint: COLD_START_MISSION.debrief,
+            preAnswerPoint: "정답을 확인하면 이 단계가 왜 지금 필요한지, 실제 램프 흐름과 함께 정리합니다.",
+        });
     }
 
     function buildHotasQuestion() {
@@ -1340,9 +1509,46 @@
         };
     }
 
-    function buildTopicQuestion() {
+    function buildDailyQuestion() {
+        const focusModules = weakestModules(3);
+        const focusModule = focusModules[0] || getSelectedModule() || sample(state.modules.filter((item) => item.partNumber > 0));
+        const preferredMode = preferredModeForModule(focusModule);
+        let baseQuestion;
+
+        if (preferredMode === "coldstart") {
+            baseQuestion = buildColdStartQuestion();
+        } else if (preferredMode === "panel") {
+            baseQuestion = buildPanelQuestion(focusModule ? focusModule.title : "");
+        } else if (preferredMode === "hotas") {
+            baseQuestion = buildHotasQuestion();
+        } else if (preferredMode === "sequence") {
+            baseQuestion = buildSequenceQuestion(focusModule ? focusModule.title : "");
+        } else {
+            baseQuestion = buildTopicQuestion(focusModule);
+        }
+
+        const actualFocusModule = baseQuestion.moduleId
+            ? state.modules.find((item) => item.id === baseQuestion.moduleId) || null
+            : null;
+        const focusLabel = dailyFocusLabel(preferredMode, actualFocusModule, focusModule);
+        return {
+            ...baseQuestion,
+            mode: "daily",
+            sourceMode: preferredMode,
+            kicker: `오늘의 3분 훈련 / ${focusLabel}`,
+            context: `오늘의 포커스: ${focusLabel}\n${baseQuestion.context}`,
+            trainingValue: "바쁜 날에도 바로 실전 감각이 살아나는 파트만 짧게 다시 떠올립니다.",
+            trainingPoint: dailyFocusPoint(preferredMode, actualFocusModule, focusModule, baseQuestion.trainingPoint),
+            preAnswerPoint: "최근 정확도가 낮거나 아직 손에 안 익은 영역을 먼저 복습합니다.",
+        };
+    }
+
+    function buildTopicQuestion(preferredModule = null) {
         const eligibleModules = state.modules.filter((item) => item.partNumber > 0 && item.topics.some((topic) => !topic.synthetic));
-        const module = sample(eligibleModules);
+        const module =
+            preferredModule && eligibleModules.some((item) => item.id === preferredModule.id)
+                ? preferredModule
+                : sample(eligibleModules);
         const topic = sample(module.topics.filter((item) => !item.synthetic));
         const correct = module;
         const distractorModules = shuffle(eligibleModules.filter((item) => item.id !== module.id)).slice(0, 3);
@@ -1366,6 +1572,71 @@
             trainingPoint: `${module.meta.koTitle} 파트는 ${module.meta.summary}`,
             preAnswerPoint: "정답을 확인하면 이 토픽이 왜 그 파트에 속하는지 바로 설명합니다.",
             explanation: `${module.meta.koTitle} 파트에서 이 토픽을 집중적으로 다룹니다.`,
+        };
+    }
+
+    function buildPanelQuestion(preferredModuleTitle = "") {
+        const targetPool = PANEL_SPOTTING_TARGETS.filter((target) => {
+            if (!preferredModuleTitle) {
+                return true;
+            }
+            return target.moduleTitle === preferredModuleTitle;
+        });
+        const resolvedTargets = (targetPool.length ? targetPool : PANEL_SPOTTING_TARGETS).map((target) => ({
+            ...target,
+            page: findBestPageForTarget(target),
+        })).filter((target) => Number.isFinite(target.page));
+
+        const target = sample(resolvedTargets);
+        if (!target) {
+            return buildTopicQuestion();
+        }
+
+        const distractorPages = uniqueNumbers(
+            shuffle(
+                resolvedTargets
+                    .filter((candidate) => candidate.page !== target.page)
+                    .map((candidate) => candidate.page)
+            )
+        ).slice(0, 3);
+
+        if (distractorPages.length < 3) {
+            const fallbackPages = uniqueNumbers(
+                shuffle(
+                    state.modules
+                        .filter((module) => module.partNumber > 0)
+                        .map((module) => module.pageStart)
+                )
+            ).filter((page) => page !== target.page && !distractorPages.includes(page));
+            distractorPages.push(...fallbackPages.slice(0, 3 - distractorPages.length));
+        }
+
+        const choicePages = shuffle([target.page, ...distractorPages]).slice(0, 4);
+        const choices = choicePages.map((page) => {
+            const module = moduleForPage(page);
+            return {
+                label: formatPageRange(page, page),
+                subtitle: module ? `${module.meta.koTitle} / ${shortEnglishTitle(module.title)}` : "Guide Reader",
+                page,
+            };
+        });
+
+        return {
+            mode: "panel",
+            kicker: "패널 찾기 훈련 / Panel Spotting",
+            prompt: `"${target.label} / ${target.ko}" 위치를 먼저 확인하려면 어느 페이지를 열겠습니까?`,
+            context: `문서에서 관련 페이지를 빠르게 여는 연습입니다. 정답 후에는 바로 그 페이지로 이동해 그림과 설명을 함께 볼 수 있습니다.`,
+            choices,
+            choiceKind: "page",
+            answerIndex: choicePages.indexOf(target.page),
+            moduleId: moduleIdForTitle(target.moduleTitle),
+            pageJump: target.page,
+            reference: `${target.ko} / ${formatPageRange(target.page, target.page)}`,
+            feedback: "",
+            trainingValue: target.practicalUse,
+            trainingPoint: target.explanation,
+            preAnswerPoint: "정답 페이지를 찾은 뒤 바로 열어서 스위치 위치와 설명을 같이 보는 게 핵심입니다.",
+            explanation: `${target.ko} 관련 설명은 ${formatPageRange(target.page, target.page)}에서 먼저 확인할 수 있습니다.`,
         };
     }
 
@@ -1519,18 +1790,20 @@
             }
         }
 
+        const answerLabel = questionChoiceLabel(state.quiz, state.quiz.answerIndex);
+
         if (state.quiz.mode === "hotas") {
             state.quiz.feedback = correct
                 ? `정답. ${state.quiz.explanation}`
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
-        } else if (state.quiz.mode === "sequence") {
+                : `오답. 정답은 "${answerLabel}" 입니다. ${state.quiz.explanation}`;
+        } else if (state.quiz.mode === "sequence" || state.quiz.mode === "coldstart") {
             state.quiz.feedback = correct
                 ? `정답. ${state.quiz.explanation}`
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
+                : `오답. 정답은 "${answerLabel}" 입니다. ${state.quiz.explanation}`;
         } else {
             state.quiz.feedback = correct
                 ? `정답. ${state.quiz.explanation}`
-                : `오답. 정답은 "${state.quiz.choices[state.quiz.answerIndex]}" 입니다. ${state.quiz.explanation}`;
+                : `오답. 정답은 "${answerLabel}" 입니다. ${state.quiz.explanation}`;
         }
 
         if (session) {
@@ -1544,7 +1817,13 @@
                 if (session.wrong === 0) {
                     unlockBadge("clean_sortie");
                 }
-                if (session.mode === "hotas") {
+                if (session.mode === "daily") {
+                    unlockBadge("daily_briefer");
+                } else if (session.mode === "coldstart") {
+                    unlockBadge("cold_start_ready");
+                } else if (session.mode === "panel") {
+                    unlockBadge("panel_hunter");
+                } else if (session.mode === "hotas") {
                     unlockBadge("systems_brain");
                 } else if (session.mode === "topic") {
                     unlockBadge("route_reader");
@@ -1825,6 +2104,9 @@
         if (module.partNumber === 4) {
             return "시동은 큰 단계 A-I를 먼저 외운 뒤, JFS, RPM, FTIT, 발전기 전환 같은 확인 포인트를 세부로 붙이세요.";
         }
+        if (module.partNumber === 3) {
+            return "조종석 파트는 텍스트만 읽지 말고, 패널 찾기 훈련으로 실제 페이지 그림까지 같이 보며 위치 감각을 붙이세요.";
+        }
         if (module.partNumber === 5) {
             return "NWS 해제 타이밍, CAT I/CAT III 확인, 로테이션 속도 감각을 같이 묶어 연습하면 좋습니다.";
         }
@@ -1838,6 +2120,12 @@
             return "이 파트부터는 HOTAS와 센서 흐름이 같이 움직입니다. 단순 읽기보다 ‘무슨 버튼으로 무엇을 바꾸는가’를 함께 보세요.";
         }
         return "이 파트는 원문 구조를 따라가며 용어와 흐름을 익힌 뒤, 관련 드릴로 손 기억을 붙이는 방식이 좋습니다.";
+    }
+
+    function buildQuickStudyPlan(module) {
+        const recommended = preferredModeForModule(module);
+        const recommendedLabel = DRILL_CONFIGS[recommended] ? DRILL_CONFIGS[recommended].label : "오늘의 3분 훈련";
+        return `1분은 현재 페이지 그림과 핵심 용어를 보고, 1분은 ${recommendedLabel}으로 바로 확인하고, 마지막 1분은 틀린 부분만 다시 읽는 식으로 짧게 반복하세요.`;
     }
 
     function extractPartNumber(title) {
@@ -1877,6 +2165,13 @@
         return module ? module.id : null;
     }
 
+    function emptyModeCounter() {
+        return Object.keys(DRILL_CONFIGS).reduce((accumulator, key) => {
+            accumulator[key] = 0;
+            return accumulator;
+        }, {});
+    }
+
     function defaultProgress() {
         return {
             xp: 0,
@@ -1886,17 +2181,17 @@
             missionsWon: 0,
             bestStreak: 0,
             badges: [],
-            modeRuns: { sequence: 0, hotas: 0, topic: 0 },
-            modeWins: { sequence: 0, hotas: 0, topic: 0 },
+            modeRuns: emptyModeCounter(),
+            modeWins: emptyModeCounter(),
         };
     }
 
     function normalizeModeCounter(value) {
-        return {
-            sequence: Number(value?.sequence) || 0,
-            hotas: Number(value?.hotas) || 0,
-            topic: Number(value?.topic) || 0,
-        };
+        const counter = emptyModeCounter();
+        for (const key of Object.keys(counter)) {
+            counter[key] = Number(value && Object.prototype.hasOwnProperty.call(value, key) ? value[key] : 0) || 0;
+        }
+        return counter;
     }
 
     function normalizeProgress(value) {
@@ -2112,6 +2407,169 @@
 
     function clamp(value, min, max) {
         return Math.min(Math.max(value, min), max);
+    }
+
+    function weakestModules(limit = 3) {
+        return state.modules
+            .filter((module) => module.partNumber > 0)
+            .map((module) => {
+                const bucket = state.progress.modules[module.id] || { answered: 0, correct: 0 };
+                const answered = Number(bucket.answered) || 0;
+                const correct = Number(bucket.correct) || 0;
+                const accuracy = answered ? correct / answered : 0.45;
+                const weakness = (1 - accuracy) + Math.max(0, 3 - answered) * 0.08;
+                return { module, weakness };
+            })
+            .sort((left, right) => right.weakness - left.weakness)
+            .slice(0, limit)
+            .map((entry) => entry.module);
+    }
+
+    function preferredModeForModule(module) {
+        if (!module) {
+            return "daily";
+        }
+        if (module.partNumber === 4) {
+            return "coldstart";
+        }
+        if ([3, 16, 17].includes(module.partNumber)) {
+            return "panel";
+        }
+        if (module.partNumber >= 9 && module.partNumber <= 12) {
+            return "hotas";
+        }
+        if (module.partNumber === 6) {
+            return "sequence";
+        }
+        if (module.partNumber === 5) {
+            return "sequence";
+        }
+        return "topic";
+    }
+
+    function sequencePackForModule(moduleTitle) {
+        if (!moduleTitle) {
+            return null;
+        }
+        return SEQUENCE_PACKS.find((pack) => pack.moduleTitle === moduleTitle) || null;
+    }
+
+    function dailyFocusLabel(preferredMode, actualFocusModule, requestedFocusModule) {
+        if (preferredMode === "hotas") {
+            return "HOTAS 감각 / 핵심 입력";
+        }
+        if (preferredMode === "panel") {
+            if (requestedFocusModule && actualFocusModule && requestedFocusModule.id === actualFocusModule.id) {
+                return `${requestedFocusModule.meta.koTitle} / ${shortEnglishTitle(requestedFocusModule.title)}`;
+            }
+            return "패널 위치 감각 / Panel Spotting";
+        }
+        if (actualFocusModule) {
+            return `${actualFocusModule.meta.koTitle} / ${shortEnglishTitle(actualFocusModule.title)}`;
+        }
+        if (requestedFocusModule) {
+            return `${requestedFocusModule.meta.koTitle} / ${shortEnglishTitle(requestedFocusModule.title)}`;
+        }
+        return "전체 루프";
+    }
+
+    function dailyFocusPoint(preferredMode, actualFocusModule, requestedFocusModule, fallbackText) {
+        if (preferredMode === "hotas") {
+            return "센서, 무장, 방어 절차 전부에 걸쳐 반복해서 쓰는 핵심 입력을 먼저 복습합니다.";
+        }
+        if (preferredMode === "panel") {
+            if (requestedFocusModule && actualFocusModule && requestedFocusModule.id === actualFocusModule.id) {
+                return `${requestedFocusModule.meta.koTitle} 파트 우선 복습. ${requestedFocusModule.meta.summary}`;
+            }
+            return "문서에서 필요한 장비 페이지를 빨리 여는 감각을 우선 복습합니다.";
+        }
+        if (actualFocusModule) {
+            return `${actualFocusModule.meta.koTitle} 파트 우선 복습. ${actualFocusModule.meta.summary}`;
+        }
+        if (requestedFocusModule) {
+            return `${requestedFocusModule.meta.koTitle} 파트 우선 복습. ${requestedFocusModule.meta.summary}`;
+        }
+        return fallbackText;
+    }
+
+    function renderQuestionChoices(question) {
+        const choiceClass = question.choiceKind === "page" ? "question-choices page-choice-grid" : "question-choices";
+        return `
+            <div class="${choiceClass}">
+                ${question.choices
+                    .map((choice, index) => {
+                        let className = question.choiceKind === "page" ? "choice-button choice-button-visual" : "choice-button";
+                        if (question.answered) {
+                            if (index === question.answerIndex) {
+                                className += " correct";
+                            } else if (index === question.selectedIndex) {
+                                className += " wrong";
+                            }
+                        }
+
+                        if (question.choiceKind === "page") {
+                            const page = Number(choice.page) || 1;
+                            return `
+                                <button class="${className}" data-choice-index="${index}" type="button">
+                                    <img class="choice-thumb" src="${escapeHtml(pageImageUrl(page))}" alt="" loading="lazy" onerror="this.style.display='none'; this.parentElement.classList.add('thumb-fallback');">
+                                    <span class="choice-caption">
+                                        <strong>${escapeHtml(choice.label)}</strong>
+                                        <small>${escapeHtml(choice.subtitle || "")}</small>
+                                    </span>
+                                </button>
+                            `;
+                        }
+
+                        return `<button class="${className}" data-choice-index="${index}" type="button">${escapeHtml(questionChoiceLabel(question, index))}</button>`;
+                    })
+                    .join("")}
+            </div>
+        `;
+    }
+
+    function questionChoiceLabel(question, index) {
+        const choice = question.choices[index];
+        if (choice && typeof choice === "object") {
+            return choice.label || choice.title || choice.subtitle || `선택지 ${index + 1}`;
+        }
+        return String(choice || "");
+    }
+
+    function findBestPageForTarget(target) {
+        const pages = findPagesForSearchTerms(target.searchTerms);
+        if (!pages.length) {
+            return null;
+        }
+        const moduleId = moduleIdForTitle(target.moduleTitle);
+        const module = moduleId ? state.modules.find((item) => item.id === moduleId) : null;
+        if (module) {
+            const scoped = pages.find((page) => page >= module.pageStart && page <= module.pageEnd);
+            if (scoped) {
+                return scoped;
+            }
+        }
+        return pages[0];
+    }
+
+    function findPagesForSearchTerms(terms, limit = 8) {
+        const matches = [];
+        for (let index = 0; index < pageTexts.length; index += 1) {
+            const englishText = pageTexts[index] || "";
+            const koreanText = pageTextsKo[index] || "";
+            const matched = terms.some((term) => matchesSearch(englishText, term) || matchesSearch(koreanText, term));
+            if (!matched) {
+                continue;
+            }
+            matches.push(index + 1);
+            if (matches.length >= limit) {
+                break;
+            }
+        }
+        return matches;
+    }
+
+    function uniqueNumbers(items) {
+        return [...new Set(items.filter((item) => Number.isFinite(item)))];
     }
 
     function shuffle(items) {
