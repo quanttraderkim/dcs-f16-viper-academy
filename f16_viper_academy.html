@@ -850,7 +850,7 @@
         .drill-grid {
             margin-top: 18px;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 14px;
         }
 
@@ -875,6 +875,14 @@
             color: var(--text-body);
             line-height: 1.5;
             font-size: 14px;
+        }
+
+        .drill-card strong {
+            color: var(--accent);
+            font-size: 12px;
+            font-family: "Barlow Condensed", sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
         }
 
         .drill-card::before {
@@ -1058,6 +1066,43 @@
             background: rgba(255, 255, 255, 0.06);
             color: var(--text-strong);
             border: 1px solid rgba(255, 237, 192, 0.12);
+            cursor: pointer;
+        }
+
+        .page-choice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .choice-button-visual {
+            padding: 10px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .choice-thumb {
+            width: 100%;
+            aspect-ratio: 1.18 / 1;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 237, 192, 0.12);
+            background: rgba(8, 18, 28, 0.18);
+        }
+
+        .choice-caption {
+            display: grid;
+            gap: 4px;
+        }
+
+        .choice-caption strong {
+            font-size: 15px;
+            color: inherit;
+        }
+
+        .choice-caption small {
+            color: var(--text-body);
+            line-height: 1.45;
         }
 
         .choice-button.correct {
@@ -1483,7 +1528,8 @@
         body[data-theme="light"] .sortie-status,
         body[data-theme="light"] .sortie-badge,
         body[data-theme="light"] .choice-button,
-        body[data-theme="light"] .reader-language-button.active {
+        body[data-theme="light"] .reader-language-button.active,
+        body[data-theme="light"] .choice-caption strong {
             color: #15303f;
         }
 
@@ -1529,6 +1575,15 @@
             background: rgba(238, 246, 250, 0.88);
             border-color: rgba(75, 107, 126, 0.14);
             color: #15303f;
+        }
+
+        body[data-theme="light"] .choice-caption small {
+            color: rgba(16, 39, 53, 0.74);
+        }
+
+        body[data-theme="light"] .choice-thumb {
+            border-color: rgba(75, 107, 126, 0.16);
+            background: rgba(228, 238, 244, 0.9);
         }
 
         body[data-theme="light"] .reader-visual {
@@ -1737,6 +1792,7 @@
             .detail-grid,
             .hero-grid,
             .drill-grid,
+            .page-choice-grid,
             .reader-layout {
                 grid-template-columns: 1fr;
             }
@@ -1909,21 +1965,42 @@
                     <div class="panel-kicker">Drills</div>
                     <h2 class="section-title">학습용 게임 드릴</h2>
                     <p class="muted">
-                        전체 구조를 익히는 파트 매핑 퀴즈, 절차를 몸에 넣는 시퀀스 드릴, 손에 익혀야 하는 HOTAS 반사신경
-                        드릴을 번갈아 돌리면 됩니다.
+                        바쁜 날에는 3분 훈련 하나만 돌리고, 여유가 있으면 콜드스타트와 패널 찾기까지 이어서 보면 실제 DCS
+                        진입 전에 기억이 훨씬 빨리 살아납니다.
                     </p>
                     <div class="drill-grid">
                         <article class="drill-card">
-                            <h3>체크리스트 플로우</h3>
-                            <p>시동, 활주, 이륙, 착륙 절차를 실제 체크 흐름처럼 익힙니다.</p>
-                            <button class="action-button" data-drill="sequence">절차 훈련 시작</button>
+                            <strong>Daily Loop</strong>
+                            <h3>오늘의 3분 훈련</h3>
+                            <p>현재 약한 파트를 골라 짧게 복습합니다. 출근 전이나 점심 틈새에 가장 잘 맞습니다.</p>
+                            <button class="action-button" data-drill="daily">3분 훈련 시작</button>
                         </article>
                         <article class="drill-card">
+                            <strong>Ramp Start</strong>
+                            <h3>콜드스타트 아카데미</h3>
+                            <p>배터리, JFS, 엔진, INS, 최종 체크 흐름을 램프 시동처럼 이어서 익힙니다.</p>
+                            <button class="action-button" data-drill="coldstart">콜드스타트 시작</button>
+                        </article>
+                        <article class="drill-card">
+                            <strong>Procedure Flow</strong>
+                            <h3>체크리스트 플로우</h3>
+                            <p>시동, 활주, 이륙, 착륙 절차를 큰 단계 흐름으로 다시 연결해줍니다.</p>
+                            <button class="action-button" data-drill="sequence">절차 플로우 시작</button>
+                        </article>
+                        <article class="drill-card">
+                            <strong>Panel Spotting</strong>
+                            <h3>패널 찾기 훈련</h3>
+                            <p>실제 PDF 페이지 그림을 보고 Probe Heat, VHF, JFS 같은 항목이 있는 페이지를 찾습니다.</p>
+                            <button class="action-button" data-drill="panel">패널 찾기 시작</button>
+                        </article>
+                        <article class="drill-card">
+                            <strong>Hands First</strong>
                             <h3>HOTAS 반응 훈련</h3>
                             <p>스틱과 스로틀 스위치를 실제 상황 문맥과 함께 손에 익힙니다.</p>
                             <button class="action-button" data-drill="hotas">HOTAS 훈련 시작</button>
                         </article>
                         <article class="drill-card">
+                            <strong>Guide Recall</strong>
                             <h3>가이드 구조 훈련</h3>
                             <p>가이드 전체 목차를 바탕으로 필요한 파트를 빠르게 찾는 감각을 익힙니다.</p>
                             <button class="action-button" data-drill="topic">구조 훈련 시작</button>
