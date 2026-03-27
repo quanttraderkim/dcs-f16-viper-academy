@@ -1819,6 +1819,14 @@
             .stat-strip {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+
+            .reader-head {
+                align-items: flex-start;
+            }
+
+            .reader-controls {
+                width: 100%;
+            }
         }
 
         @media (max-width: 720px) {
@@ -1831,6 +1839,26 @@
             .panel {
                 padding: 18px;
                 border-radius: 22px;
+            }
+
+            .hero-copy h1 {
+                font-size: clamp(34px, 13vw, 46px);
+                line-height: 0.94;
+            }
+
+            .hero-copy p {
+                font-size: 15px;
+                line-height: 1.62;
+            }
+
+            .hero-flightline {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .flight-chip {
+                width: 100%;
+                justify-content: flex-start;
             }
 
             .stat-strip {
@@ -1857,6 +1885,7 @@
             .workspace-toolbar {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 14px;
             }
 
             .view-switch {
@@ -1864,14 +1893,182 @@
                 justify-content: stretch;
             }
 
+            .toolbar-controls {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
             .view-mode-button {
                 flex: 1;
+            }
+
+            .theme-switch {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .theme-mode-button {
+                flex: 1;
+            }
+
+            .focus-note {
+                display: none;
+            }
+
+            .module-card,
+            .search-card,
+            .glossary-card,
+            .section-card,
+            .drill-card,
+            .quiz-shell {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .reader-head {
+                padding: 12px;
+            }
+
+            .reader-controls {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .reader-controls .small-button {
+                min-height: 42px;
+                padding-left: 0;
+                padding-right: 0;
+                justify-content: center;
+            }
+
+            .reader-language {
+                grid-column: 1 / -1;
+                width: 100%;
+                border-radius: 14px;
+                justify-content: space-between;
+                gap: 6px;
+            }
+
+            .reader-language-label {
+                padding-left: 4px;
+            }
+
+            .reader-language-button {
+                flex: 1;
+                text-align: center;
+            }
+
+            .reader-image-shell {
+                min-height: 0;
+                max-height: none;
+                padding: 10px;
+                overflow: hidden;
+            }
+
+            .reader-body {
+                max-height: none;
+                overflow: visible;
+                padding: 14px;
+            }
+
+            .reader-page-hotspot {
+                top: 10px;
+                bottom: 10px;
+                width: 44px;
+            }
+
+            .reader-page-hint {
+                display: none;
+            }
+
+            .action-button,
+            .guide-search .action-button,
+            .small-button {
+                min-height: 44px;
             }
 
             .image-modal-card {
                 inset: 10px;
                 padding: 12px;
                 border-radius: 18px;
+            }
+
+            .image-modal-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .image-modal-top .action-button {
+                width: 100%;
+            }
+
+            .image-modal-body {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .shell {
+                width: min(100%, calc(100% - 12px));
+                margin: 8px auto 16px;
+            }
+
+            .hero,
+            .panel {
+                padding: 14px;
+                border-radius: 18px;
+            }
+
+            .eyebrow,
+            .toolbar-label,
+            .panel-kicker {
+                letter-spacing: 0.12em;
+            }
+
+            .workspace-toolbar {
+                margin-top: 12px;
+                padding: 12px;
+            }
+
+            .reader-meta,
+            .route-banner,
+            .hero-flightline {
+                gap: 6px;
+            }
+
+            .reader-controls {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .reader-language {
+                padding: 4px;
+            }
+
+            .reader-language-label {
+                display: none;
+            }
+
+            .reader-language-button {
+                padding: 10px 8px;
+            }
+
+            .reader-visual-top,
+            .sortie-topline,
+            .quiz-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .reader-visual-top .action-button,
+            .quiz-footer .reader-controls,
+            .quiz-footer .small-button {
+                width: 100%;
+            }
+
+            .text-input {
+                padding: 13px 14px;
             }
         }
     </style>
