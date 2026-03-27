@@ -1254,29 +1254,6 @@
             overflow: auto;
         }
 
-        .reader-image-shell.is-loading::before {
-            content: "다음 페이지 불러오는 중";
-            position: absolute;
-            top: 22px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(7, 18, 29, 0.72);
-            border: 1px solid rgba(255, 237, 192, 0.16);
-            color: rgba(251, 245, 234, 0.82);
-            font-size: 11px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            z-index: 3;
-            pointer-events: none;
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-            white-space: nowrap;
-        }
-
         .reader-page-hotspot {
             position: absolute;
             top: 14px;
@@ -1615,11 +1592,6 @@
             background: linear-gradient(180deg, rgba(233, 243, 248, 0.98), rgba(220, 235, 243, 0.96));
         }
 
-        body[data-theme="light"] .reader-image-shell.is-loading::before {
-            background: rgba(255, 250, 242, 0.9);
-            border-color: rgba(75, 107, 126, 0.18);
-            color: #15303f;
-        }
 
         body[data-theme="light"] .briefing-card {
             background: linear-gradient(135deg, rgba(255, 184, 77, 0.12), rgba(121, 214, 255, 0.08));
