@@ -1256,8 +1256,8 @@
 
         .reader-image-shell.is-loading::before {
             content: "다음 페이지 불러오는 중";
-            position: sticky;
-            top: 18px;
+            position: absolute;
+            top: 22px;
             left: 50%;
             transform: translateX(-50%);
             display: inline-flex;
@@ -1273,6 +1273,8 @@
             text-transform: uppercase;
             z-index: 3;
             pointer-events: none;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+            white-space: nowrap;
         }
 
         .reader-page-hotspot {
