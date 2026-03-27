@@ -883,6 +883,8 @@
                         <button class="action-button" data-open-image-modal="${state.selectedPage}" type="button">크게 보기</button>
                     </div>
                     <div class="reader-image-shell">
+                        <button class="reader-page-hotspot prev" data-page-action="prev" type="button" aria-label="이전 페이지" ${atFirstPage ? "disabled" : ""}></button>
+                        <button class="reader-page-hotspot next" data-page-action="next" type="button" aria-label="다음 페이지" ${atLastPage ? "disabled" : ""}></button>
                         <img
                             class="reader-image"
                             src="${escapeHtml(imageUrl)}"
@@ -894,6 +896,7 @@
                             이 페이지 이미지가 아직 생성되지 않았습니다. PDF 추출 스크립트를
                             <code>--render-page-images</code> 옵션으로 다시 실행하면 페이지 그림과 설명을 같이 볼 수 있습니다.
                         </div>
+                        <div class="reader-page-hint">좌우 클릭으로 페이지 넘기기</div>
                     </div>
                 </div>
                 <section class="reader-body">

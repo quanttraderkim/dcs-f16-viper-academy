@@ -1199,12 +1199,112 @@
         }
 
         .reader-image-shell {
+            position: relative;
             border-radius: 16px;
             padding: 14px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 237, 192, 0.08);
             max-height: min(84vh, 1100px);
             overflow: auto;
+        }
+
+        .reader-page-hotspot {
+            position: absolute;
+            top: 14px;
+            bottom: 14px;
+            width: 56px;
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: opacity 150ms ease, background 150ms ease;
+        }
+
+        .reader-page-hotspot::after {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: rgba(7, 18, 29, 0.58);
+            border: 1px solid rgba(255, 237, 192, 0.16);
+            color: rgba(251, 245, 234, 0.92);
+            font-size: 24px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 150ms ease, transform 150ms ease, background 150ms ease;
+            pointer-events: none;
+        }
+
+        .reader-page-hotspot.prev {
+            left: 14px;
+            justify-content: flex-start;
+            background: linear-gradient(90deg, rgba(7, 18, 29, 0.22), transparent 88%);
+        }
+
+        .reader-page-hotspot.prev::after {
+            content: "‹";
+            margin-left: 10px;
+        }
+
+        .reader-page-hotspot.next {
+            right: 14px;
+            justify-content: flex-end;
+            background: linear-gradient(270deg, rgba(7, 18, 29, 0.22), transparent 88%);
+        }
+
+        .reader-page-hotspot.next::after {
+            content: "›";
+            margin-right: 10px;
+        }
+
+        .reader-image-shell:hover .reader-page-hotspot::after,
+        .reader-page-hotspot:focus-visible::after {
+            opacity: 1;
+            transform: scale(1.03);
+        }
+
+        .reader-page-hotspot:focus-visible {
+            outline: 2px solid rgba(121, 214, 255, 0.88);
+            outline-offset: 2px;
+        }
+
+        .reader-page-hotspot:disabled {
+            cursor: not-allowed;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .reader-page-hotspot:disabled::after {
+            opacity: 0.3;
+        }
+
+        .reader-page-hint {
+            position: absolute;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(7, 18, 29, 0.6);
+            border: 1px solid rgba(255, 237, 192, 0.12);
+            color: rgba(251, 245, 234, 0.76);
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 150ms ease;
+            z-index: 2;
+        }
+
+        .reader-image-shell:hover .reader-page-hint,
+        .reader-page-hotspot:focus-visible ~ .reader-page-hint {
+            opacity: 1;
         }
 
         .reader-image {
@@ -1450,6 +1550,21 @@
         body[data-theme="light"] .reader-image-shell {
             background: rgba(255, 255, 255, 0.72);
             border-color: rgba(75, 107, 126, 0.12);
+        }
+
+        body[data-theme="light"] .reader-page-hotspot.prev {
+            background: linear-gradient(90deg, rgba(22, 42, 53, 0.14), transparent 82%);
+        }
+
+        body[data-theme="light"] .reader-page-hotspot.next {
+            background: linear-gradient(270deg, rgba(22, 42, 53, 0.14), transparent 82%);
+        }
+
+        body[data-theme="light"] .reader-page-hotspot::after,
+        body[data-theme="light"] .reader-page-hint {
+            background: rgba(247, 250, 252, 0.82);
+            border-color: rgba(75, 107, 126, 0.16);
+            color: #163243;
         }
 
         body[data-theme="light"] .text-input,
