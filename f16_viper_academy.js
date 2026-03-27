@@ -696,10 +696,16 @@
         refs.imageModalClose.addEventListener("click", closeImageModal);
         refs.imageModalImage.addEventListener("error", handleModalImageError);
         refs.imageModalImage.addEventListener("load", handleModalImageLoad);
+        document.addEventListener("click", handleGlobalClick);
         document.addEventListener("keydown", handleDocumentKeydown);
-        document.querySelectorAll("[data-drill]").forEach((button) => {
-            button.addEventListener("click", () => startDrill(button.dataset.drill));
-        });
+    }
+
+    function handleGlobalClick(event) {
+        const drillButton = event.target.closest("[data-drill]");
+        if (!drillButton) {
+            return;
+        }
+        startDrill(drillButton.dataset.drill);
     }
 
     function buildModules() {
