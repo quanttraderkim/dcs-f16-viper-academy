@@ -485,7 +485,7 @@
         captureRefs();
         state.modules = buildModules();
         state.selectedModuleId = state.modules[0] ? state.modules[0].id : null;
-        state.selectedPage = state.modules[0] ? state.modules[0].pageStart : 1;
+        setSelectedPage(state.modules[0] ? state.modules[0].pageStart : 1);
         if (!hasAnyKoTranslation) {
             state.readerLanguage = "en";
         }
@@ -765,18 +765,24 @@
     }
 
     function renderModuleDetail() {
+        syncModuleForSelectedPage();
         const module = getSelectedModule();
         if (!module) {
             refs.moduleDetail.innerHTML = `<div class="empty-state">선택된 모듈이 없습니다.</div>`;
             return;
         }
 
-        state.selectedPage = clamp(state.selectedPage, module.pageStart, module.pageEnd);
+        const totalPages = guidePageCount();
+        state.selectedPage = clamp(state.selectedPage, 1, totalPages);
         const pageText = currentReaderText(state.selectedPage);
         const moduleScore = getModuleScore(module.id);
         const topSections = module.topics.slice(0, 14);
         const imageUrl = pageImageUrl(state.selectedPage);
         const translationAvailable = hasKoTranslation(state.selectedPage);
+        const atModuleStart = state.selectedPage <= module.pageStart;
+        const atModuleEnd = state.selectedPage >= module.pageEnd;
+        const atFirstPage = state.selectedPage <= 1;
+        const atLastPage = state.selectedPage >= totalPages;
         const languageBadge =
             state.readerLanguage === "ko" && translationAvailable ? "한국어 기계번역" : "영문 추출본";
         const readerHeadline =
@@ -859,10 +865,10 @@
                             English
                         </button>
                     </div>
-                    <button class="small-button" data-page-action="first">처음</button>
-                    <button class="small-button" data-page-action="prev">이전</button>
-                    <button class="small-button" data-page-action="next">다음</button>
-                    <button class="small-button" data-page-action="last">끝</button>
+                    <button class="small-button" data-page-action="first" type="button" ${atModuleStart ? "disabled" : ""}>처음</button>
+                    <button class="small-button" data-page-action="prev" type="button" ${atFirstPage ? "disabled" : ""}>이전</button>
+                    <button class="small-button" data-page-action="next" type="button" ${atLastPage ? "disabled" : ""}>다음</button>
+                    <button class="small-button" data-page-action="last" type="button" ${atModuleEnd ? "disabled" : ""}>끝</button>
                 </div>
             </div>
             <div class="reader-meta">
@@ -1048,7 +1054,8 @@
     function handleDetailClick(event) {
         const pageJump = event.target.closest("[data-jump-page]");
         if (pageJump) {
-            state.selectedPage = Number(pageJump.dataset.jumpPage) || state.selectedPage;
+            setSelectedPage(Number(pageJump.dataset.jumpPage) || state.selectedPage);
+            renderModules();
             renderModuleDetail();
             return;
         }
@@ -1121,16 +1128,18 @@
         if (!module) {
             return;
         }
+        const totalPages = guidePageCount();
         if (action === "first") {
-            state.selectedPage = module.pageStart;
+            setSelectedPage(module.pageStart);
         } else if (action === "prev") {
-            state.selectedPage = clamp(state.selectedPage - 1, module.pageStart, module.pageEnd);
+            setSelectedPage(state.selectedPage - 1);
         } else if (action === "next") {
-            state.selectedPage = clamp(state.selectedPage + 1, module.pageStart, module.pageEnd);
+            setSelectedPage(state.selectedPage + 1);
         } else if (action === "last") {
-            state.selectedPage = module.pageEnd;
+            setSelectedPage(module.pageEnd);
         }
         renderModuleDetail();
+        renderModules();
     }
 
     function handleImageModalClick(event) {
@@ -1771,7 +1780,7 @@
             return;
         }
         state.selectedModuleId = module.id;
-        state.selectedPage = clamp(page || module.pageStart, module.pageStart, module.pageEnd);
+        setSelectedPage(page || module.pageStart);
         renderModules();
         renderModuleDetail();
     }
@@ -1788,6 +1797,25 @@
 
     function moduleForPage(page) {
         return state.modules.find((module) => page >= module.pageStart && page <= module.pageEnd) || null;
+    }
+
+    function guidePageCount() {
+        return Math.max(Number(manifest.pageCount) || pageTexts.length || 0, 1);
+    }
+
+    function syncModuleForSelectedPage() {
+        const module = moduleForPage(state.selectedPage);
+        if (module) {
+            state.selectedModuleId = module.id;
+        }
+    }
+
+    function setSelectedPage(page) {
+        state.selectedPage = clamp(page, 1, guidePageCount());
+        syncModuleForSelectedPage();
+        if (state.readerLanguage === "ko" && !hasKoTranslation(state.selectedPage)) {
+            state.readerLanguage = "en";
+        }
     }
 
     function buildPracticeHint(module) {
